@@ -2,7 +2,7 @@ package com.example.screenshare.listeners
 
 import android.util.Log
 import com.example.screenshare.utils.TAG
-import com.example.screenshare.utils.VideoTrackPublishResult
+import com.example.screenshare.results.VideoTrackPublishResult
 import com.twilio.video.*
 
 class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->Unit): LocalParticipant.Listener {

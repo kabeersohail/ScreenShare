@@ -13,18 +13,18 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.example.accesstoken.AccessTokenGenerator
+import com.example.accesstoken.utils.ProfileData
 import com.example.screenshare.R
 import com.example.screenshare.databinding.FragmentLaunchBinding
 import com.example.screenshare.listeners.LocalParticipantListener
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.managers.ScreenCaptureManager
-import com.example.screenshare.utils.Constants.ACCESS_TOKEN
 import com.example.screenshare.utils.Constants.ROOM_NAME
-import com.example.screenshare.utils.Constants.SECOND_ACCESS_TOKEN
-import com.example.screenshare.utils.RoomConnectionResult
+import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.TAG
-import com.example.screenshare.utils.VideoTrackPublishResult
+import com.example.screenshare.results.VideoTrackPublishResult
 import com.twilio.video.*
 import java.lang.Exception
 
@@ -79,6 +79,7 @@ class LaunchFragment : Fragment() {
         screenCaptureManager = ScreenCaptureManager(requireContext())
 
         binding.roomConnectionStatus.text = getString(R.string.initial_status)
+        binding.isStreaming = false
 
         binding.shareScreen.setOnClickListener {
 
@@ -103,7 +104,10 @@ class LaunchFragment : Fragment() {
     }
 
     private fun connectToRoom() {
-        val connectionOptions: ConnectOptions = ConnectOptions.Builder(SECOND_ACCESS_TOKEN)
+
+        val profileData = ProfileData("SKc55675e70622252b2749f4bf76eab051", "jdv9MaxAYhiO4zuwmw1xZVlKPCqJrZQh", "salman")
+
+        val connectionOptions: ConnectOptions = ConnectOptions.Builder(AccessTokenGenerator().getToken(profileData))
             .roomName(ROOM_NAME)
             .build()
 
@@ -162,6 +166,7 @@ class LaunchFragment : Fragment() {
                 is VideoTrackPublishResult.Failure -> throw Exception(videoTrackPublishResult.twilioException.message)
                 VideoTrackPublishResult.Success -> {
                     Toast.makeText(requireContext(), "Video track published successfully", Toast.LENGTH_SHORT).show()
+                    binding.isStreaming = true
                 }
             }
         })

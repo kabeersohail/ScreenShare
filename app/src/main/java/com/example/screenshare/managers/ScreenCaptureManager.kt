@@ -8,7 +8,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
 import com.example.screenshare.services.ScreenCapturerService
-import com.example.screenshare.utils.State
+import com.example.screenshare.utils.ServiceState
 
 
 @TargetApi(29)
@@ -16,7 +16,7 @@ class ScreenCaptureManager(private val context: Context) {
     lateinit var screenCapturerService: ScreenCapturerService
     private var connection: ServiceConnection
 
-    var currentState: State = State.UnbindService
+    var currentState: ServiceState = ServiceState.UnbindService
 
     init {
         val connection: ServiceConnection = object : ServiceConnection {
@@ -25,7 +25,7 @@ class ScreenCaptureManager(private val context: Context) {
 
                 val binder: ScreenCapturerService.LocalBinder = service as ScreenCapturerService.LocalBinder
                 screenCapturerService = binder.getService()
-                currentState = State.BindService
+                currentState = ServiceState.BindService
 
             }
 
@@ -44,17 +44,17 @@ class ScreenCaptureManager(private val context: Context) {
 
     fun startForeground() {
         screenCapturerService.startForeground()
-        currentState = State.StartForeground
+        currentState = ServiceState.StartForeground
     }
 
     fun endForeground() {
         screenCapturerService.endForeground()
-        currentState = State.EndForeground
+        currentState = ServiceState.EndForeground
     }
 
     fun unbindService() {
         context.unbindService(connection)
-        currentState = State.UnbindService
+        currentState = ServiceState.UnbindService
     }
 
 }

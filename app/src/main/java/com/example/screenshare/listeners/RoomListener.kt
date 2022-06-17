@@ -1,7 +1,7 @@
 package com.example.screenshare.listeners
 
 import android.util.Log
-import com.example.screenshare.utils.RoomConnectionResult
+import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.TAG
 import com.twilio.video.RemoteParticipant
 import com.twilio.video.Room

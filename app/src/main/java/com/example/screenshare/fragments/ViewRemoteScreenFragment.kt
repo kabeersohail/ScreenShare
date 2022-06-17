@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.accesstoken.AccessTokenGenerator
+import com.example.accesstoken.utils.ProfileData
 import com.example.screenshare.R
 import com.example.screenshare.databinding.FragmentViewRemoteScreenBinding
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.utils.Constants
-import com.example.screenshare.utils.RoomConnectionResult
+import com.example.screenshare.results.RoomConnectionResult
 import com.twilio.video.*
 
 class ViewRemoteScreenFragment : Fragment() {
@@ -36,7 +38,10 @@ class ViewRemoteScreenFragment : Fragment() {
     }
 
     private fun connectToRoom(){
-        val connectionOptions: ConnectOptions = ConnectOptions.Builder(Constants.ACCESS_TOKEN)
+
+        val profileData = ProfileData("SKc55675e70622252b2749f4bf76eab051", "jdv9MaxAYhiO4zuwmw1xZVlKPCqJrZQh", "dev")
+
+        val connectionOptions: ConnectOptions = ConnectOptions.Builder(AccessTokenGenerator().getToken(profileData))
             .roomName(Constants.ROOM_NAME)
             .build()
 
