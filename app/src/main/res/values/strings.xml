@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ScreenShare</string>
+    <string name="view_remote_screen">View remote screen</string>
+    <string name="share_your_screen">Share your screen</string>
+    <string name="screen_capture_error">Screen capturer error occurred.</string>
+    <string name="initial_status">Not connected to any room yet</string>
+    <string name="connected">Connected</string>
+</resources>

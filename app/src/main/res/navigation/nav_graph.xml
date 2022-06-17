@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/launchFragment">
+
+    <fragment
+        android:id="@+id/launchFragment"
+        android:name="com.example.screenshare.fragments.LaunchFragment"
+        android:label="LaunchFragment" >
+        <action
+            android:id="@+id/action_launchFragment_to_viewRemoteScreenFragment"
+            app:destination="@id/viewRemoteScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewRemoteScreenFragment"
+        android:name="com.example.screenshare.fragments.ViewRemoteScreenFragment"
+        android:label="ViewRemoteScreenFragment" />
+</navigation>
