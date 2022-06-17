@@ -1,5 +1,7 @@
 package com.example.screenshare.listeners
 
+import android.util.Log
+import com.example.screenshare.utils.TAG
 import com.example.screenshare.utils.VideoTrackPublishResult
 import com.twilio.video.*
 
@@ -8,7 +10,7 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localParticipant: LocalParticipant,
         localAudioTrackPublication: LocalAudioTrackPublication
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track published")
     }
 
     override fun onAudioTrackPublicationFailed(
@@ -16,7 +18,7 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localAudioTrack: LocalAudioTrack,
         twilioException: TwilioException
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track publish failed")
     }
 
     override fun onVideoTrackPublished(
@@ -38,7 +40,7 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localParticipant: LocalParticipant,
         localDataTrackPublication: LocalDataTrackPublication
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Data track published")
     }
 
     override fun onDataTrackPublicationFailed(
@@ -46,6 +48,6 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localDataTrack: LocalDataTrack,
         twilioException: TwilioException
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Data track publish failed")
     }
 }

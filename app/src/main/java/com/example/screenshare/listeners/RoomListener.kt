@@ -19,11 +19,11 @@ class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Lis
     }
 
     override fun onReconnecting(room: Room, twilioException: TwilioException) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Reconnecting")
     }
 
     override fun onReconnected(room: Room) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Reconnected")
     }
 
     override fun onDisconnected(room: Room, twilioException: TwilioException?) {
@@ -36,14 +36,14 @@ class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Lis
     }
 
     override fun onParticipantDisconnected(room: Room, remoteParticipant: RemoteParticipant) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"$remoteParticipant disconnected")
     }
 
     override fun onRecordingStarted(room: Room) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"recording started")
     }
 
     override fun onRecordingStopped(room: Room) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"recording stopped")
     }
 }

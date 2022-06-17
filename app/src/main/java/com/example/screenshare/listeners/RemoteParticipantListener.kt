@@ -1,5 +1,7 @@
 package com.example.screenshare.listeners
 
+import android.util.Log
+import com.example.screenshare.utils.TAG
 import com.twilio.video.*
 
 class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteVideoTrack?, message: String)-> Unit): RemoteParticipant.Listener {
@@ -7,14 +9,14 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track published")
     }
 
     override fun onAudioTrackUnpublished(
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track publish failed")
     }
 
     override fun onAudioTrackSubscribed(
@@ -22,7 +24,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteAudioTrackPublication: RemoteAudioTrackPublication,
         remoteAudioTrack: RemoteAudioTrack
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track subscribed")
     }
 
     override fun onAudioTrackSubscriptionFailed(
@@ -30,7 +32,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteAudioTrackPublication: RemoteAudioTrackPublication,
         twilioException: TwilioException
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"Audio track subscribe failed")
     }
 
     override fun onAudioTrackUnsubscribed(
@@ -38,7 +40,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteAudioTrackPublication: RemoteAudioTrackPublication,
         remoteAudioTrack: RemoteAudioTrack
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "Audio track unsubscribed")
     }
 
     override fun onVideoTrackPublished(
@@ -52,7 +54,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteParticipant: RemoteParticipant,
         remoteVideoTrackPublication: RemoteVideoTrackPublication
     ) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"video track unpublished failed")
     }
 
     override fun onVideoTrackSubscribed(
@@ -68,7 +70,6 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         twilioException: TwilioException
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onVideoTrackUnsubscribed(
@@ -76,21 +77,18 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onDataTrackPublished(
         remoteParticipant: RemoteParticipant,
         remoteDataTrackPublication: RemoteDataTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onDataTrackUnpublished(
         remoteParticipant: RemoteParticipant,
         remoteDataTrackPublication: RemoteDataTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onDataTrackSubscribed(
@@ -98,7 +96,6 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteDataTrackPublication: RemoteDataTrackPublication,
         remoteDataTrack: RemoteDataTrack
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onDataTrackSubscriptionFailed(
@@ -106,7 +103,6 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteDataTrackPublication: RemoteDataTrackPublication,
         twilioException: TwilioException
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onDataTrackUnsubscribed(
@@ -114,34 +110,29 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteDataTrackPublication: RemoteDataTrackPublication,
         remoteDataTrack: RemoteDataTrack
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onAudioTrackEnabled(
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onAudioTrackDisabled(
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onVideoTrackEnabled(
         remoteParticipant: RemoteParticipant,
         remoteVideoTrackPublication: RemoteVideoTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onVideoTrackDisabled(
         remoteParticipant: RemoteParticipant,
         remoteVideoTrackPublication: RemoteVideoTrackPublication
     ) {
-        TODO("Not yet implemented")
     }
 }
