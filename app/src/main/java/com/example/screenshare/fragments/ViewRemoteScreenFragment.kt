@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.accesstoken.AccessTokenGenerator
 import com.example.accesstoken.utils.ProfileData
 import com.example.screenshare.R
@@ -21,7 +22,7 @@ class ViewRemoteScreenFragment : Fragment() {
     lateinit var binding: FragmentViewRemoteScreenBinding
     lateinit var room: Room
     lateinit var remoteScreen: VideoView
-
+    lateinit var remoteParticipants: List<RemoteParticipant>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,20 +50,39 @@ class ViewRemoteScreenFragment : Fragment() {
             when(roomConnectionResult){
                 is RoomConnectionResult.Failure -> Toast.makeText(requireContext(), "${roomConnectionResult.twilioException?.message}", Toast.LENGTH_SHORT).show()
                 RoomConnectionResult.Success.RemoteUserJoined -> {
-                    val remoteParticipants: List<RemoteParticipant> = room.remoteParticipants
-                    remoteParticipants.forEach { remoteParticipant ->
-                        remoteParticipant.setListener(RemoteParticipantListener { remoteVideoTrack, message ->
-                            Toast.makeText(requireContext(), message,Toast.LENGTH_SHORT).show()
-                            remoteVideoTrack?.addSink(remoteScreen)
-                        })
-                    }
+                    doAction()
                 }
                 RoomConnectionResult.Success -> {
-                    Toast.makeText(requireContext(), getString(R.string.connected), Toast.LENGTH_SHORT).show()
+                    doAction()
                 }
             }
         })
 
+    }
+
+    private fun doAction() {
+        remoteParticipants = room.remoteParticipants
+        remoteParticipants.forEach { remoteParticipant ->
+            remoteParticipant.setListener(RemoteParticipantListener { remoteVideoTrack, message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                if (message == "unsubscribed from video track of remote participant") {
+                    findNavController().popBackStack()
+                } else {
+                    remoteVideoTrack?.addSink(remoteScreen)
+                }
+            })
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        room.disconnect()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        room.disconnect()
     }
 
 }

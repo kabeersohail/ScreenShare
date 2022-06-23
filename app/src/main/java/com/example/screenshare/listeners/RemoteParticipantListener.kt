@@ -47,14 +47,14 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteParticipant: RemoteParticipant,
         remoteVideoTrackPublication: RemoteVideoTrackPublication
     ) {
-        callback.invoke(null,"remote particpant published video")
+        callback.invoke(null,"remote participant published video")
     }
 
     override fun onVideoTrackUnpublished(
         remoteParticipant: RemoteParticipant,
         remoteVideoTrackPublication: RemoteVideoTrackPublication
     ) {
-        Log.d(TAG,"video track unpublished failed")
+        callback.invoke(null, "remote participant unpublished video")
     }
 
     override fun onVideoTrackSubscribed(
@@ -62,7 +62,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
-        callback.invoke(remoteVideoTrack,"")
+        callback.invoke(remoteVideoTrack,"subscribed to remote participant's video track")
     }
 
     override fun onVideoTrackSubscriptionFailed(
@@ -70,6 +70,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         twilioException: TwilioException
     ) {
+        callback.invoke(null,"${twilioException.message}")
     }
 
     override fun onVideoTrackUnsubscribed(
@@ -77,6 +78,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
+        callback.invoke(remoteVideoTrack,"unsubscribed from video track of remote participant")
     }
 
     override fun onDataTrackPublished(

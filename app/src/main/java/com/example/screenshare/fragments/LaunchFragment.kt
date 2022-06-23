@@ -44,7 +44,6 @@ class LaunchFragment : Fragment() {
         override fun onFirstFrameAvailable() {
             Log.d(TAG, "First frame available")
         }
-
     }
 
     private val onScreenCaptureResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ activityResult ->
@@ -61,7 +60,7 @@ class LaunchFragment : Fragment() {
 
             } ?: throw Exception("Intent not available")
         } else{
-            throw Exception("Result code didn't match")
+            Toast.makeText(requireContext(),"Screen cast permission not granted",Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -78,23 +77,25 @@ class LaunchFragment : Fragment() {
 
         screenCaptureManager = ScreenCaptureManager(requireContext())
 
-        binding.roomConnectionStatus.text = getString(R.string.initial_status)
-        binding.isStreaming = false
-
         binding.shareScreen.setOnClickListener {
 
-            if(::room.isInitialized) {
-
-                binding.roomConnectionStatus.text = room.state.name
-
+            if(::room.isInitialized){
                 when(room.state) {
                     Room.State.CONNECTED -> Toast.makeText(requireContext(), "Already connected", Toast.LENGTH_SHORT).show()
                     Room.State.DISCONNECTED -> connectToRoom()
                     else -> {}
                 }
+
             } else connectToRoom()
+        }
 
-
+        binding.stopScreenShare.setOnClickListener {
+            if(::room.isInitialized){
+                room.localParticipant?.unpublishTrack(screenVideoTrack)
+                room.disconnect()
+            } else {
+                Toast.makeText(requireContext(), "Screen sharing is not started yet",Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.viewRemoteScreen.setOnClickListener {
@@ -118,7 +119,6 @@ class LaunchFragment : Fragment() {
 
                 when (roomConnectionResult) {
                     is RoomConnectionResult.Success -> {
-                        binding.roomConnectionStatus.text = getString(R.string.connected)
                         Toast.makeText(requireContext(), getString(R.string.connected), Toast.LENGTH_SHORT).show()
 
                         // Connected to a room
@@ -134,9 +134,6 @@ class LaunchFragment : Fragment() {
 
                     }
                     is RoomConnectionResult.Failure -> {
-
-                        binding.roomConnectionStatus.text =
-                            roomConnectionResult.twilioException?.message
 
                         Toast.makeText(requireContext(), "${roomConnectionResult.twilioException?.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -166,7 +163,6 @@ class LaunchFragment : Fragment() {
                 is VideoTrackPublishResult.Failure -> throw Exception(videoTrackPublishResult.twilioException.message)
                 VideoTrackPublishResult.Success -> {
                     Toast.makeText(requireContext(), "Video track published successfully", Toast.LENGTH_SHORT).show()
-                    binding.isStreaming = true
                 }
             }
         })
