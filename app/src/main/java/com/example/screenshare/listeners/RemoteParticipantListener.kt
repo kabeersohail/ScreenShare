@@ -3,6 +3,7 @@ package com.example.screenshare.listeners
 import android.util.Log
 import com.example.screenshare.utils.TAG
 import com.twilio.video.*
+import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
 
 class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteVideoTrack?, message: String)-> Unit): RemoteParticipant.Listener {
     override fun onAudioTrackPublished(
@@ -62,6 +63,8 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
+        remoteVideoTrack.priority = TrackPriority.HIGH
+        remoteVideoTrack.setContentPreferences(VideoContentPreferences(HD_1080P_VIDEO_DIMENSIONS))
         callback.invoke(remoteVideoTrack,"subscribed to remote participant's video track")
     }
 

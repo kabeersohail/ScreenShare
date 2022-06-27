@@ -108,7 +108,15 @@ class LaunchFragment : Fragment() {
 
         val profileData = ProfileData("SKc55675e70622252b2749f4bf76eab051", "jdv9MaxAYhiO4zuwmw1xZVlKPCqJrZQh", "salman")
 
+        val videoBandwidthProfileOptions: VideoBandwidthProfileOptions = VideoBandwidthProfileOptions.Builder()
+            .videoContentPreferencesMode(VideoContentPreferencesMode.MANUAL)
+            .mode(BandwidthProfileMode.PRESENTATION)
+            .build()
+
+        val bandwidthProfileOptions = BandwidthProfileOptions(videoBandwidthProfileOptions)
+
         val connectionOptions: ConnectOptions = ConnectOptions.Builder(AccessTokenGenerator().getToken(profileData))
+            .bandwidthProfile(bandwidthProfileOptions)
             .roomName(ROOM_NAME)
             .build()
 
@@ -153,10 +161,12 @@ class LaunchFragment : Fragment() {
         // fetch screen video track
         screenVideoTrack = startScreenCapture(screenCapturer)
 
+        val localTrackPublicationOptions = LocalTrackPublicationOptions(TrackPriority.HIGH)
+
         // publish the video track
         val localParticipant: LocalParticipant =
             room.localParticipant ?: throw Exception("No local participants found")
-        localParticipant.publishTrack(screenVideoTrack)
+        localParticipant.publishTrack(screenVideoTrack, localTrackPublicationOptions)
 
         localParticipant.setListener(LocalParticipantListener { videoTrackPublishResult ->
             when (videoTrackPublishResult) {
@@ -172,7 +182,10 @@ class LaunchFragment : Fragment() {
         onScreenCaptureResult.launch(mediaProjectionManager.createScreenCaptureIntent())
 
     private fun startScreenCapture(screenCapturer: ScreenCapturer): LocalVideoTrack {
-        return LocalVideoTrack.create(requireContext(), true, screenCapturer) ?: throw Exception("Unable to access LocalVideoTrack")
+        return LocalVideoTrack.create(requireContext(), true, screenCapturer, VideoFormat(
+            VideoDimensions.HD_1080P_VIDEO_DIMENSIONS,
+            24
+        )) ?: throw Exception("Unable to access LocalVideoTrack")
     }
 
     override fun onDestroy() {
