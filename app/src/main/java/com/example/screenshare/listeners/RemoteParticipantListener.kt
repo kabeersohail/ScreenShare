@@ -1,11 +1,12 @@
 package com.example.screenshare.listeners
 
 import android.util.Log
+import com.example.screenshare.results.RemoteTrack
 import com.example.screenshare.utils.TAG
 import com.twilio.video.*
 import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
 
-class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteVideoTrack?, message: String)-> Unit): RemoteParticipant.Listener {
+class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteTrack?, message: String)-> Unit): RemoteParticipant.Listener {
     override fun onAudioTrackPublished(
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication
@@ -26,6 +27,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteAudioTrack: RemoteAudioTrack
     ) {
         Log.d(TAG,"Audio track subscribed")
+        callback.invoke(RemoteTrack.AudioTrack(remoteAudioTrack),"subscribed to remote participant's audio track")
     }
 
     override fun onAudioTrackSubscriptionFailed(
@@ -65,7 +67,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
     ) {
         remoteVideoTrack.priority = TrackPriority.HIGH
         remoteVideoTrack.setContentPreferences(VideoContentPreferences(HD_1080P_VIDEO_DIMENSIONS))
-        callback.invoke(remoteVideoTrack,"subscribed to remote participant's video track")
+        callback.invoke(RemoteTrack.VideoTrack(remoteVideoTrack),"subscribed to remote participant's video track")
     }
 
     override fun onVideoTrackSubscriptionFailed(
@@ -81,7 +83,7 @@ class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteV
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
-        callback.invoke(remoteVideoTrack,"unsubscribed from video track of remote participant")
+        callback.invoke(RemoteTrack.VideoTrack(remoteVideoTrack),"unsubscribed from video track of remote participant")
     }
 
     override fun onDataTrackPublished(

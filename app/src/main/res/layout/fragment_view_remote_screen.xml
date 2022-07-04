@@ -5,24 +5,11 @@
 
     </data>
 
-    <HorizontalScrollView
+
+    <com.twilio.video.VideoView
+        android:id="@+id/remote_screen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <com.twilio.video.VideoView
-                android:id="@+id/remote_screen"
-                android:layout_width="5000dp"
-                android:layout_height="5000dp" />
-
-        </ScrollView>
-
-
-
-    </HorizontalScrollView>
+        android:layout_height="match_parent" />
 
 
 </layout>

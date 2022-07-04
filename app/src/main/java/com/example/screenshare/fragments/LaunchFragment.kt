@@ -1,5 +1,6 @@
 package com.example.screenshare.fragments
 
+import android.Manifest
 import android.app.Activity
 import android.app.Service
 import android.content.Context
@@ -32,8 +33,6 @@ import com.example.screenshare.results.VideoTrackPublishResult
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_HEIGHT
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
 import com.twilio.video.*
-import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
-import java.lang.Exception
 
 
 class LaunchFragment : Fragment() {
@@ -41,7 +40,9 @@ class LaunchFragment : Fragment() {
     private lateinit var binding: FragmentLaunchBinding
     private lateinit var room: Room
     private lateinit var screenCaptureManager: ScreenCaptureManager
+    private lateinit var localParticipant: LocalParticipant
     private lateinit var screenVideoTrack: LocalVideoTrack
+    private lateinit var localAudioTrack: LocalAudioTrack
 
     private val screenCapturerListener: ScreenCapturer.Listener = object : ScreenCapturer.Listener{
         override fun onScreenCaptureError(errorDescription: String) {
@@ -50,6 +51,15 @@ class LaunchFragment : Fragment() {
 
         override fun onFirstFrameAvailable() {
             Log.d(TAG, "First frame available")
+        }
+    }
+
+    private val requestRecordedAudioPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted  ->
+        if(isGranted){
+            // Add audio track here
+            localAudioTrack = LocalAudioTrack.create(requireContext(), true) ?: throw Exception("Audio track not created")
+            localParticipant.publishTrack(localAudioTrack)
+            Toast.makeText(requireContext(),"Audio track published", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -171,7 +181,7 @@ class LaunchFragment : Fragment() {
         val localTrackPublicationOptions = LocalTrackPublicationOptions(TrackPriority.HIGH)
 
         // publish the video track
-        val localParticipant: LocalParticipant =
+        localParticipant =
             room.localParticipant ?: throw Exception("No local participants found")
         localParticipant.publishTrack(screenVideoTrack, localTrackPublicationOptions)
 
@@ -180,6 +190,9 @@ class LaunchFragment : Fragment() {
                 is VideoTrackPublishResult.Failure -> throw Exception(videoTrackPublishResult.twilioException.message)
                 VideoTrackPublishResult.Success -> {
                     Toast.makeText(requireContext(), "Video track published successfully", Toast.LENGTH_SHORT).show()
+
+                    // Request run time audio record permission
+                    requestRecordedAudioPermissionResult.launch(Manifest.permission.RECORD_AUDIO)
                 }
             }
         })

@@ -12,17 +12,24 @@ import com.example.accesstoken.utils.ProfileData
 import com.example.screenshare.databinding.FragmentViewRemoteScreenBinding
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
+import com.example.screenshare.results.RemoteTrack
 import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.Constants
+import com.twilio.audioswitch.AudioDevice
+import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.*
 import tvi.webrtc.SurfaceViewRenderer
+import java.nio.ByteBuffer
 
 class ViewRemoteScreenFragment : Fragment() {
 
-    lateinit var binding: FragmentViewRemoteScreenBinding
-    lateinit var room: Room
+    private lateinit var binding: FragmentViewRemoteScreenBinding
+    private lateinit var room: Room
     lateinit var remoteScreen: VideoView
-    lateinit var remoteParticipants: List<RemoteParticipant>
+    private lateinit var remoteParticipants: List<RemoteParticipant>
+    private lateinit var audioSwitch: AudioSwitch
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +42,7 @@ class ViewRemoteScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         remoteScreen = binding.remoteScreen
+        audioSwitch = AudioSwitch(requireContext().applicationContext)
         connectToRoom()
     }
 
@@ -66,14 +74,26 @@ class ViewRemoteScreenFragment : Fragment() {
     private fun doAction() {
         remoteParticipants = room.remoteParticipants
         remoteParticipants.forEach { remoteParticipant ->
-            remoteParticipant.setListener(RemoteParticipantListener { remoteVideoTrack, message ->
+            remoteParticipant.setListener(RemoteParticipantListener { remoteTrack, message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 
                 if (message == "unsubscribed from video track of remote participant") {
                     findNavController().popBackStack()
                 } else {
-//                    remoteScreen.videoScaleType = VideoScaleType.ASPECT_FILL
-                    remoteVideoTrack?.addSink(remoteScreen)
+
+                    when(remoteTrack){
+                        is RemoteTrack.AudioTrack -> {
+                            Toast.makeText(requireContext(), "${remoteTrack.remoteAudioTrack.isPlaybackEnabled}", Toast.LENGTH_SHORT).show()
+                            audioSwitch.start { audioDevices, selectedAudioDevice ->
+                                audioDevices.find { it is AudioDevice.Speakerphone }?.let { audioSwitch.selectDevice(it) }
+                            }
+
+                            audioSwitch.activate()
+
+                        }
+                        is RemoteTrack.VideoTrack -> remoteTrack.remoteVideoTrack.addSink(remoteScreen)
+                        null -> Toast.makeText(requireContext(),"null",Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
         }
@@ -87,6 +107,7 @@ class ViewRemoteScreenFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         room.disconnect()
+        audioSwitch.stop()
     }
 
 }
