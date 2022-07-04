@@ -1,14 +1,18 @@
 package com.example.screenshare.fragments
 
 import android.app.Activity
+import android.app.Service
 import android.content.Context
+import android.graphics.Point
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -25,6 +29,8 @@ import com.example.screenshare.utils.Constants.ROOM_NAME
 import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.TAG
 import com.example.screenshare.results.VideoTrackPublishResult
+import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_HEIGHT
+import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
 import com.twilio.video.*
 import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
 import java.lang.Exception
@@ -183,8 +189,17 @@ class LaunchFragment : Fragment() {
         onScreenCaptureResult.launch(mediaProjectionManager.createScreenCaptureIntent())
 
     private fun startScreenCapture(screenCapturer: ScreenCapturer): LocalVideoTrack {
+
+        val metrics = DisplayMetrics()
+        getRealScreenSize(requireContext().applicationContext, metrics)
+
+        adjustScreenMetrics(metrics)
+
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+
         return LocalVideoTrack.create(requireContext(), true, screenCapturer, VideoFormat(
-            HD_1080P_VIDEO_DIMENSIONS,
+            VideoDimensions(width, height),
             24
         )) ?: throw Exception("Unable to access LocalVideoTrack")
     }
@@ -199,6 +214,37 @@ class LaunchFragment : Fragment() {
         }
 
         screenVideoTrack.release()
+    }
+
+    fun adjustScreenMetrics(metrics: DisplayMetrics): Float {
+        val srcWidth = metrics.widthPixels
+        // Adjust translated screencast size for phones with high screen resolutions
+        if (metrics.widthPixels > MAX_SHARED_SCREEN_WIDTH || metrics.heightPixels > MAX_SHARED_SCREEN_HEIGHT) {
+            val widthScale: Float = metrics.widthPixels.toFloat() / MAX_SHARED_SCREEN_WIDTH
+            val heightScale: Float = metrics.heightPixels.toFloat() / MAX_SHARED_SCREEN_HEIGHT
+            val maxScale = if (widthScale > heightScale) widthScale else heightScale
+            metrics.widthPixels /= maxScale.toInt()
+            metrics.heightPixels /= maxScale.toInt()
+        }
+        val videoScale = metrics.widthPixels.toFloat() / srcWidth
+
+        // Workaround against the codec bug: https://stackoverflow.com/questions/36915383/what-does-error-code-1010-in-android-mediacodec-mean
+        // Making height and width divisible by 2
+        metrics.heightPixels = metrics.heightPixels and 0xFFFE
+        metrics.widthPixels = metrics.widthPixels and 0xFFFE
+        return videoScale
+    }
+
+    fun getRealScreenSize(context: Context, metrics: DisplayMetrics) {
+        val wm = context.getSystemService(Service.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+
+        // This gets correct screen density, but wrong width and height
+        display.getMetrics(metrics)
+        val screenSize = Point()
+        display.getRealSize(screenSize)
+        metrics.widthPixels = screenSize.x
+        metrics.heightPixels = screenSize.y
     }
 
 }
