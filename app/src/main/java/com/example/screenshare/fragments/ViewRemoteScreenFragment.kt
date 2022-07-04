@@ -15,6 +15,7 @@ import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.Constants
 import com.twilio.video.*
+import tvi.webrtc.SurfaceViewRenderer
 
 class ViewRemoteScreenFragment : Fragment() {
 
@@ -71,6 +72,7 @@ class ViewRemoteScreenFragment : Fragment() {
                 if (message == "unsubscribed from video track of remote participant") {
                     findNavController().popBackStack()
                 } else {
+//                    remoteScreen.videoScaleType = VideoScaleType.ASPECT_FILL
                     remoteVideoTrack?.addSink(remoteScreen)
                 }
             })

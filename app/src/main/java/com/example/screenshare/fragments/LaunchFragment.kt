@@ -26,6 +26,7 @@ import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.TAG
 import com.example.screenshare.results.VideoTrackPublishResult
 import com.twilio.video.*
+import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
 import java.lang.Exception
 
 
@@ -183,7 +184,7 @@ class LaunchFragment : Fragment() {
 
     private fun startScreenCapture(screenCapturer: ScreenCapturer): LocalVideoTrack {
         return LocalVideoTrack.create(requireContext(), true, screenCapturer, VideoFormat(
-            VideoDimensions.HD_1080P_VIDEO_DIMENSIONS,
+            HD_1080P_VIDEO_DIMENSIONS,
             24
         )) ?: throw Exception("Unable to access LocalVideoTrack")
     }
