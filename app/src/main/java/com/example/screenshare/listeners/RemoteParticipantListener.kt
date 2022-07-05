@@ -6,7 +6,7 @@ import com.example.screenshare.utils.TAG
 import com.twilio.video.*
 import com.twilio.video.VideoDimensions.HD_1080P_VIDEO_DIMENSIONS
 
-class RemoteParticipantListener(private val callback: (remoteVideoTrack: RemoteTrack?, message: String)-> Unit): RemoteParticipant.Listener {
+class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?, message: String)-> Unit): RemoteParticipant.Listener {
     override fun onAudioTrackPublished(
         remoteParticipant: RemoteParticipant,
         remoteAudioTrackPublication: RemoteAudioTrackPublication

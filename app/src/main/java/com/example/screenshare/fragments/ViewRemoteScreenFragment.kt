@@ -29,7 +29,6 @@ class ViewRemoteScreenFragment : Fragment() {
     private lateinit var remoteParticipants: List<RemoteParticipant>
     private lateinit var audioSwitch: AudioSwitch
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
