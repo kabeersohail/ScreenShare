@@ -1,6 +1,7 @@
 package com.example.screenshare.listeners
 
 import android.util.Log
+import com.example.screenshare.results.RoomEvent
 import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.utils.TAG
 import com.twilio.video.RemoteParticipant
@@ -9,7 +10,7 @@ import com.twilio.video.TwilioException
 
 class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Listener {
     override fun onConnected(room: Room) {
-        callback.invoke(RoomConnectionResult.Success)
+        callback.invoke(RoomConnectionResult.Success(RoomEvent.Connected))
         Log.d(TAG,"connected")
     }
 
@@ -32,7 +33,7 @@ class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Lis
 
     override fun onParticipantConnected(room: Room, remoteParticipant: RemoteParticipant) {
         Log.d(TAG,"${remoteParticipant.identity} has joined the room")
-        callback.invoke(RoomConnectionResult.Success.RemoteUserJoined)
+        callback.invoke(RoomConnectionResult.Success(RoomEvent.RemoteUserJoined))
     }
 
     override fun onParticipantDisconnected(room: Room, remoteParticipant: RemoteParticipant) {
@@ -41,9 +42,11 @@ class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Lis
 
     override fun onRecordingStarted(room: Room) {
         Log.d(TAG,"recording started")
+        callback.invoke(RoomConnectionResult.Success(RoomEvent.RecordingStarted))
     }
 
     override fun onRecordingStopped(room: Room) {
         Log.d(TAG,"recording stopped")
+        callback.invoke(RoomConnectionResult.Success(RoomEvent.RecordingStopped))
     }
 }

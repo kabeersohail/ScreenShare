@@ -20,18 +20,20 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.example.accesstoken.AccessTokenGenerator
 import com.example.accesstoken.utils.ProfileData
+import com.example.accesstoken.utils.UpdateRules
 import com.example.screenshare.R
 import com.example.screenshare.databinding.FragmentLaunchBinding
 import com.example.screenshare.listeners.LocalParticipantListener
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.managers.ScreenCaptureManager
-import com.example.screenshare.utils.Constants.ROOM_NAME
 import com.example.screenshare.results.RoomConnectionResult
-import com.example.screenshare.utils.TAG
+import com.example.screenshare.results.RoomEvent
 import com.example.screenshare.results.VideoTrackPublishResult
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_HEIGHT
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
+import com.example.screenshare.utils.Constants.ROOM_NAME
+import com.example.screenshare.utils.TAG
 import com.twilio.video.*
 
 
@@ -60,6 +62,10 @@ class LaunchFragment : Fragment() {
             localAudioTrack = LocalAudioTrack.create(requireContext(), true) ?: throw Exception("Audio track not created")
             localParticipant.publishTrack(localAudioTrack)
             Toast.makeText(requireContext(),"Audio track published", Toast.LENGTH_SHORT).show()
+
+            val x = UpdateRules().x(room.sid)
+            Toast.makeText(requireContext(), x, Toast.LENGTH_SHORT).show()
+
         }
     }
 
@@ -83,7 +89,7 @@ class LaunchFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentLaunchBinding.inflate(inflater, container, false)
         return binding.root
@@ -144,31 +150,42 @@ class LaunchFragment : Fragment() {
 
                 when (roomConnectionResult) {
                     is RoomConnectionResult.Success -> {
-                        Toast.makeText(requireContext(), getString(R.string.connected), Toast.LENGTH_SHORT).show()
 
-                        // Connected to a room
+                        when(roomConnectionResult.event){
+                            RoomEvent.Connected -> {
+                                Toast.makeText(requireContext(), getString(R.string.connected), Toast.LENGTH_SHORT).show()
 
-                        if (Build.VERSION.SDK_INT >= 29) screenCaptureManager.startForeground()
+                                // Connected to a room
 
-                        // Now request permission to capture screen
+                                if (Build.VERSION.SDK_INT >= 29) screenCaptureManager.startForeground()
 
-                        val mediaProjectionManager: MediaProjectionManager =
-                            requireContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                                // Now request permission to capture screen
 
-                        requestScreenCapturePermission(mediaProjectionManager)
+                                val mediaProjectionManager: MediaProjectionManager =
+                                    requireContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+
+                                requestScreenCapturePermission(mediaProjectionManager)
+                            }
+                            RoomEvent.RecordingStarted -> {
+                                Toast.makeText(requireContext(), "Recording started", Toast.LENGTH_SHORT).show()
+                            }
+                            RoomEvent.RecordingStopped -> {
+                                Toast.makeText(requireContext(), "Recording stopped", Toast.LENGTH_SHORT).show()
+                            }
+                            RoomEvent.RemoteUserJoined -> {
+                                val remoteParticipants: List<RemoteParticipant> = room.remoteParticipants
+                                remoteParticipants.forEach { remoteParticipant ->
+                                    remoteParticipant.setListener(RemoteParticipantListener { _, _ ->
+
+                                    })
+                                }
+                            }
+                        }
 
                     }
                     is RoomConnectionResult.Failure -> {
 
                         Toast.makeText(requireContext(), "${roomConnectionResult.twilioException?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                    RoomConnectionResult.Success.RemoteUserJoined -> {
-                        val remoteParticipants: List<RemoteParticipant> = room.remoteParticipants
-                        remoteParticipants.forEach { remoteParticipant ->
-                            remoteParticipant.setListener(RemoteParticipantListener() { _, _ ->
-
-                            })
-                        }
                     }
                 }
             })

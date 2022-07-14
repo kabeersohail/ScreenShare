@@ -18,8 +18,6 @@ import com.example.screenshare.utils.Constants
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.*
-import tvi.webrtc.SurfaceViewRenderer
-import java.nio.ByteBuffer
 
 class ViewRemoteScreenFragment : Fragment() {
 
@@ -59,10 +57,7 @@ class ViewRemoteScreenFragment : Fragment() {
         room = Video.connect(requireContext(), connectionOptions, RoomListener { roomConnectionResult ->
             when(roomConnectionResult){
                 is RoomConnectionResult.Failure -> Toast.makeText(requireContext(), "${roomConnectionResult.twilioException?.message}", Toast.LENGTH_SHORT).show()
-                RoomConnectionResult.Success.RemoteUserJoined -> {
-                    doAction()
-                }
-                RoomConnectionResult.Success -> {
+                is RoomConnectionResult.Success -> {
                     doAction()
                 }
             }
