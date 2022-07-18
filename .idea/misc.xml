@@ -3,10 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.1785" />
+        <entry key="app/src/main/res/drawable/circle_shape_green.xml" value="0.1785" />
         <entry key="app/src/main/res/drawable/ic_screen_share_white_24dp.xml" value="0.1785" />
         <entry key="app/src/main/res/drawable/roundedbutton.xml" value="0.1785" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21614583333333334" />
-        <entry key="app/src/main/res/layout/fragment_launch.xml" value="0.7025695800781251" />
+        <entry key="app/src/main/res/layout/fragment_launch.xml" value="0.1812377929687501" />
         <entry key="app/src/main/res/layout/fragment_view_remote_screen.xml" value="0.1" />
       </map>
     </option>

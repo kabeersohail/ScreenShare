@@ -16,13 +16,4 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main   )
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP){
-            Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
-            true
-        } else {
-            super.onKeyDown(keyCode, event)
-        }
-    }
-
 }

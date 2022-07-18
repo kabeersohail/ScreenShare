@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
@@ -99,6 +100,10 @@ class LaunchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         screenCaptureManager = ScreenCaptureManager(requireContext())
+
+        binding.status.setOnClickListener {
+            binding.status.background = requireContext().getDrawable(R.drawable.circle_shape_green)
+        }
 
         binding.shareScreen.setOnClickListener {
 
