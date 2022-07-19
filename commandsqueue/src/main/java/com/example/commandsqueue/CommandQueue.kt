@@ -9,8 +9,6 @@ import java.lang.Exception
 
 class CommandQueue {
 
-    private val index = 0
-
     val adminClickEvents = mutableListOf(
         AdminCommands.ADMIN_LOCK,
         AdminCommands.ADMIN_LOCK,
