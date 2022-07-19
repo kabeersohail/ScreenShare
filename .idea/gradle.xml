@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/accesstoken" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/commandsqueue" />
+            <option value="$PROJECT_DIR$/optimization" />
           </set>
         </option>
       </GradleProjectSettings>

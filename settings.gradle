@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 rootProject.name = "ScreenShare"
 include ':app'
 include ':accesstoken'
+include ':optimization'
+include ':commandsqueue'
