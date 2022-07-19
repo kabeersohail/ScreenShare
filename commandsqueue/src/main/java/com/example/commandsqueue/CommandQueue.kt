@@ -34,6 +34,7 @@ class CommandQueue {
     var rebootStatus: Boolean = false
     var wipeData: Boolean = false
     var uninstall: Boolean = false
+
     private lateinit var commands: MutableList<AdminCommands>
 
     suspend fun scheduleCommandsSequentially() {
