@@ -3,7 +3,10 @@ package com.example.flowscheduler
 import androidx.annotation.VisibleForTesting
 import com.example.flowscheduler.models.AdminCommand
 import com.example.flowscheduler.states.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
@@ -18,18 +21,19 @@ class FlowScheduler {
 
     suspend fun scheduler() {
 
-        val singleFlow: Flow<AdminCommand> = flow {
+        val singleFlow: Flow<AdminCommand> = callbackFlow {
 
             singleListener = object : SingleListener {
                 override suspend fun onMessageReceived(adminCommand: AdminCommand) {
-                    emit(adminCommand)
+                    send(adminCommand)
                 }
 
                 override suspend fun onDataChange(adminCommand: AdminCommand) {
-                    emit(adminCommand)
+                    send(adminCommand)
                 }
             }
 
+            awaitClose()
         }.distinctUntilChanged { old, new ->
             if (old == new) {
                 redundantCommand()
@@ -40,6 +44,7 @@ class FlowScheduler {
         }
 
         singleFlow.collect { incomingCommand ->
+
             when (isDeviceAlreadyInCommandedState(incomingCommand)) {
                 true -> {
                     redundantCommand()

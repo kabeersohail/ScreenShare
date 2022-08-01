@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/commandsqueue" />
             <option value="$PROJECT_DIR$/flowscheduler" />
             <option value="$PROJECT_DIR$/optimization" />
+            <option value="$PROJECT_DIR$/shared-flow-scheduler" />
           </set>
         </option>
       </GradleProjectSettings>
