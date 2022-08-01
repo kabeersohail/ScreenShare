@@ -44,8 +44,8 @@ class SecondaryFlowSchedulerTest {
             flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
             advanceUntilIdle()
             job.cancel()
-            // Then
 
+            // Then
             verify(exactly = 1) { flowScheduler.redundantCommand() }
 
         }
@@ -123,8 +123,8 @@ class SecondaryFlowSchedulerTest {
 
             advanceUntilIdle()
             job.cancel()
-            // Then
 
+            // Then
             coVerify(exactly = 0) { flowScheduler.scheduleCommand(any()) }
 
         }
