@@ -96,10 +96,10 @@ class FlowScheduler {
 
     private fun deviceState(incomingCommand: AdminCommand): Boolean =
         when (incomingCommand) {
-            AdminCommand.KIOSK_LOCK -> device.kioskLockState == KioskLockState.Locked
-            AdminCommand.KIOSK_UNLOCK -> device.kioskLockState == KioskLockState.Unlocked
-            AdminCommand.ADMIN_LOCK -> device.adminLockState == AdminLockState.Locked
-            AdminCommand.ADMIN_UNLOCK -> device.adminLockState == AdminLockState.Unlocked
+            AdminCommand.KIOSK_LOCK -> device.kioskLockState != KioskLockState.Unlocked
+            AdminCommand.KIOSK_UNLOCK -> device.kioskLockState != KioskLockState.Locked
+            AdminCommand.ADMIN_LOCK -> device.adminLockState != AdminLockState.Unlocked
+            AdminCommand.ADMIN_UNLOCK -> device.adminLockState != AdminLockState.Locked
             AdminCommand.CLEAR_KIOSK_PASSWORD -> device.clearKioskPasswordState == ClearKioskPasswordState.CommandIssued
             AdminCommand.REBOOT -> device.rebootState == RebootState.CommandIssued
             AdminCommand.WIPE_DATA -> device.wipeDataState == WipeDataState.CommandIssued

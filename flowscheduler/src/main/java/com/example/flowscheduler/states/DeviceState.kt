@@ -2,8 +2,8 @@ package com.example.flowscheduler.states
 
 class DeviceState {
     var rebootState: RebootState = RebootState.CommandNotIssued
-    var kioskLockState: KioskLockState = KioskLockState.Unlocked
-    var adminLockState: AdminLockState = AdminLockState.Unlocked
+    var kioskLockState: KioskLockState = KioskLockState.Unknown
+    var adminLockState: AdminLockState = AdminLockState.Unknown
     var clearKioskPasswordState: ClearKioskPasswordState = ClearKioskPasswordState.CommandNotIssued
     var wipeDataState: WipeDataState = WipeDataState.CommandNotIssued
     var uninstallState: UninstallState = UninstallState.CommandNotIssued
@@ -12,11 +12,13 @@ class DeviceState {
 sealed class KioskLockState {
     object Locked : KioskLockState()
     object Unlocked : KioskLockState()
+    object Unknown: KioskLockState()
 }
 
 sealed class AdminLockState {
     object Locked : AdminLockState()
     object Unlocked : AdminLockState()
+    object Unknown: AdminLockState()
 }
 
 sealed class UninstallState {
