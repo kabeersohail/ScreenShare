@@ -318,6 +318,7 @@ class SecondaryFlowSchedulerTest {
             flowScheduler.device = DeviceState()
             flowScheduler.device.adminLockState = AdminLockState.Unlocked
             flowScheduler.device.kioskLockState = KioskLockState.Unlocked
+
             val job: Job = launch {
                 flowScheduler.scheduler()
             }
@@ -345,5 +346,69 @@ class SecondaryFlowSchedulerTest {
                 flowScheduler.wipeData()
             }
         }
+
+    @Test
+    fun `check latest behaviour 1`() = runTest {
+
+        flowScheduler.device = DeviceState()
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+
+        advanceUntilIdle()
+        job.cancel()
+
+        coVerify(exactly = 1) { flowScheduler.scheduleCommand(AdminCommand.ADMIN_LOCK) }
+
+    }
+
+    @Test
+    fun `check latest behaviour 2`() = runTest {
+
+        flowScheduler.device = DeviceState()
+
+        flowScheduler.device.adminLockState = AdminLockState.Locked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+
+        advanceUntilIdle()
+        job.cancel()
+
+        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+
+    }
+
+    @Test
+    fun `check latest behaviour 3`() = runTest {
+
+        flowScheduler.device = DeviceState()
+
+        flowScheduler.device.adminLockState = AdminLockState.Unlocked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+
+        advanceUntilIdle()
+        job.cancel()
+
+        coVerify(exactly = 1) { flowScheduler.scheduleCommand(AdminCommand.ADMIN_LOCK) }
+
+    }
 
 }
