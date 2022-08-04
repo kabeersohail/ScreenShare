@@ -1,6 +1,7 @@
 package com.example.flowscheduler
 
 import com.example.flowscheduler.models.AdminCommand
+import com.example.flowscheduler.models.Command
 import com.example.flowscheduler.states.AdminLockState
 import com.example.flowscheduler.states.DeviceState
 import com.example.flowscheduler.states.KioskLockState
@@ -13,6 +14,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -24,6 +27,11 @@ class SecondaryFlowSchedulerTest {
     @Before
     fun setup() {
         flowScheduler = spyk(FlowScheduler())
+    }
+
+    @After
+    fun tearDown() {
+        flowScheduler.commandHistory.clear()
     }
 
     @Test
@@ -41,7 +49,9 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            val command = Command(commandID = 1000, command = AdminCommand.ADMIN_LOCK)
+
+            flowScheduler.singleListener.onMessageReceived(command)
             advanceUntilIdle()
             job.cancel()
 
@@ -65,7 +75,9 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            val command = Command(commandID = 1000, command = AdminCommand.ADMIN_LOCK)
+
+            flowScheduler.singleListener.onMessageReceived(command)
 
             advanceUntilIdle()
             job.cancel()
@@ -89,10 +101,10 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1111, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1234, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(9090, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -116,10 +128,10 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1111, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(2222, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(3333, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(4444, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -143,7 +155,7 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -167,7 +179,7 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -192,9 +204,9 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -224,9 +236,9 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
 
             advanceUntilIdle()
             job.cancel()
@@ -257,12 +269,12 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.KIOSK_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.KIOSK_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.UNINSTALL)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.WIPE_DATA)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.KIOSK_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.KIOSK_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.UNINSTALL))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.WIPE_DATA))
 
             advanceUntilIdle()
             job.cancel()
@@ -296,12 +308,12 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.KIOSK_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.KIOSK_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.UNINSTALL)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.WIPE_DATA)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.KIOSK_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.KIOSK_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.UNINSTALL))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.WIPE_DATA))
 
             advanceUntilIdle()
             job.cancel()
@@ -325,12 +337,12 @@ class SecondaryFlowSchedulerTest {
             advanceUntilIdle()
 
             // When
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_LOCK)
-            flowScheduler.singleListener.onDataChange(AdminCommand.KIOSK_LOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.ADMIN_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.KIOSK_UNLOCK)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.UNINSTALL)
-            flowScheduler.singleListener.onMessageReceived(AdminCommand.WIPE_DATA)
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+            flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.KIOSK_LOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.KIOSK_UNLOCK))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.UNINSTALL))
+            flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.WIPE_DATA))
 
             advanceUntilIdle()
             job.cancel()
@@ -345,5 +357,145 @@ class SecondaryFlowSchedulerTest {
                 flowScheduler.wipeData()
             }
         }
+
+    @Test
+    fun `new fail case`() = runTest {
+        // Given
+        flowScheduler.device = DeviceState()
+        flowScheduler.device.adminLockState = AdminLockState.Unlocked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        // When
+        flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+        flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.ADMIN_LOCK))
+        advanceUntilIdle()
+
+        flowScheduler.device.adminLockState = AdminLockState.Unlocked
+        flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.ADMIN_LOCK))
+
+        advanceUntilIdle()
+        job.cancel()
+
+        coVerify(exactly = 2) { flowScheduler.scheduleCommand(any()) }
+        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+
+        coVerifyOrder {
+            flowScheduler.scheduleCommand(any())
+            flowScheduler.redundantCommand()
+            flowScheduler.scheduleCommand(any())
+        }
+    }
+
+    @Test
+    fun `when command with same id is received from different channels, then schedule method must be called exactly once and redundant must be called exactly once`() = runTest {
+        // Given
+        flowScheduler.device = DeviceState()
+        flowScheduler.device.adminLockState = AdminLockState.Unlocked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        // When
+        flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+        flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.ADMIN_LOCK))
+        advanceUntilIdle()
+
+        job.cancel()
+
+        coVerify(exactly = 1) { flowScheduler.scheduleCommand(any()) }
+        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+
+        coVerifyOrder {
+            flowScheduler.scheduleCommand(any())
+            flowScheduler.redundantCommand()
+        }
+    }
+
+    @Test
+    fun `change scenario 1`() = runTest {
+        // Given
+        flowScheduler.device = DeviceState()
+        flowScheduler.device.kioskLockState = KioskLockState.Locked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        // When
+
+        // We receive admin command to unlock kiosk mode from RTDB channel
+        flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.KIOSK_UNLOCK))
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { flowScheduler.scheduleCommand(any()) }
+
+        // Some scenario caused kiosk to lock
+        flowScheduler.device.kioskLockState = KioskLockState.Locked
+
+        Assert.assertEquals(KioskLockState.Locked, flowScheduler.device.kioskLockState)
+
+        // After one hour we receive the previous admin command from FCM channel
+        flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.KIOSK_UNLOCK))
+        advanceUntilIdle()
+
+        job.cancel()
+
+
+        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+
+        coVerifyOrder {
+            flowScheduler.scheduleCommand(any())
+            flowScheduler.redundantCommand()
+        }
+    }
+
+    @Test
+    fun `change scenario 2`() = runTest {
+        // Given
+        flowScheduler.device = DeviceState()
+        flowScheduler.device.kioskLockState = KioskLockState.Locked
+        flowScheduler.device.adminLockState = AdminLockState.Unlocked
+
+        val job: Job = launch {
+            flowScheduler.scheduler()
+        }
+
+        advanceUntilIdle()
+
+        // When
+
+        // We receive admin command to unlock kiosk mode from RTDB channel
+        flowScheduler.singleListener.onDataChange(Command(1000, AdminCommand.KIOSK_UNLOCK))
+        advanceUntilIdle()
+
+        // Some scenario caused kiosk to lock
+        flowScheduler.device.kioskLockState = KioskLockState.Locked
+
+        Assert.assertEquals(KioskLockState.Locked, flowScheduler.device.kioskLockState)
+
+        // After one hour we receive the previous admin command from FCM channel
+        flowScheduler.singleListener.onMessageReceived(Command(1000, AdminCommand.ADMIN_LOCK))
+        advanceUntilIdle()
+
+        job.cancel()
+
+
+        coVerify(exactly = 2) { flowScheduler.scheduleCommand(any()) }
+
+        coVerifyOrder {
+            flowScheduler.scheduleCommand(any())
+            flowScheduler.scheduleCommand(any())
+        }
+    }
 
 }

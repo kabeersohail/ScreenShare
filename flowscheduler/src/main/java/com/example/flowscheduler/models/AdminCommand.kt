@@ -10,3 +10,5 @@ enum class AdminCommand {
     WIPE_DATA,
     UNINSTALL
 }
+
+data class Command(val commandID: Long, val command: AdminCommand)

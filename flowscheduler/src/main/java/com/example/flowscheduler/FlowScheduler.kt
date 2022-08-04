@@ -2,13 +2,12 @@ package com.example.flowscheduler
 
 import androidx.annotation.VisibleForTesting
 import com.example.flowscheduler.models.AdminCommand
+import com.example.flowscheduler.models.Command
 import com.example.flowscheduler.states.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 
 class FlowScheduler {
@@ -19,27 +18,31 @@ class FlowScheduler {
     lateinit var singleListener: SingleListener
     private val semaphore: Semaphore = Semaphore(1)
 
+    @VisibleForTesting
+    internal val commandHistory: MutableMap<Long, AdminCommand> = mutableMapOf()
+    
     suspend fun scheduler() {
 
-        val singleFlow: Flow<AdminCommand> = callbackFlow {
+        val singleFlow: Flow<Command> = callbackFlow {
 
             singleListener = object : SingleListener {
-                override suspend fun onMessageReceived(adminCommand: AdminCommand) {
-                    send(adminCommand)
+                override suspend fun onMessageReceived(command: Command) {
+                    send(command)
                 }
 
-                override suspend fun onDataChange(adminCommand: AdminCommand) {
-                    send(adminCommand)
+                override suspend fun onDataChange(command: Command) {
+                    send(command)
                 }
             }
 
             awaitClose()
-        }.distinctUntilChanged { old, new ->
-            if (old == new) {
-                redundantCommand()
-                true
-            } else {
-                false
+        }.distinctUntilChanged { _, new ->
+            return@distinctUntilChanged when(deviceState(new.command)) {
+                true -> {
+                    redundantCommand()
+                    true
+                }
+                false -> false
             }
         }
 
@@ -50,9 +53,27 @@ class FlowScheduler {
                     redundantCommand()
                 }
                 false -> {
-                    scheduleCommand(incomingCommand)
+
+                    when(commandHistory.isEmpty()) {
+                        true -> {
+                            scheduleCommand(incomingCommand.command)
+                            commandHistory[incomingCommand.commandID] = incomingCommand.command
+                        }
+                        false -> checkIdAndSchedule(incomingCommand)
+                    }
                 }
             }
+        }
+    }
+
+    private suspend fun checkIdAndSchedule(incomingCommand: Command) = when(val command: AdminCommand? = commandHistory[incomingCommand.commandID]) {
+        null -> {
+            scheduleCommand(incomingCommand.command)
+            commandHistory[incomingCommand.commandID] = incomingCommand.command
+        }
+        else -> if(command == incomingCommand.command) redundantCommand() else {
+            scheduleCommand(incomingCommand.command)
+            commandHistory[incomingCommand.commandID] = incomingCommand.command
         }
     }
 
@@ -85,15 +106,21 @@ class FlowScheduler {
         print("Redundant command\n")
     }
 
-    private suspend fun isDeviceAlreadyInCommandedState(incomingCommand: AdminCommand): Boolean {
+    private suspend fun isDeviceAlreadyInCommandedState(incomingCommand: Command): Boolean {
         try {
             semaphore.acquire()
-            return deviceState(incomingCommand)
+            return deviceState(incomingCommand.command)
         } finally {
             semaphore.release()
         }
     }
 
+    /**
+     * Returns true if device is already in commanded state
+     *
+     * @param incomingCommand [AdminCommand]
+     * @return [Boolean]
+     */
     private fun deviceState(incomingCommand: AdminCommand): Boolean =
         when (incomingCommand) {
             AdminCommand.KIOSK_LOCK -> device.kioskLockState == KioskLockState.Locked
@@ -143,6 +170,6 @@ class FlowScheduler {
 }
 
 interface SingleListener {
-    suspend fun onMessageReceived(adminCommand: AdminCommand)
-    suspend fun onDataChange(adminCommand: AdminCommand)
+    suspend fun onMessageReceived(command: Command)
+    suspend fun onDataChange(command: Command)
 }
