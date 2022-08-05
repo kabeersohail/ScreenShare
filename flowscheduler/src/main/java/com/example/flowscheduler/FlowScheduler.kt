@@ -3,6 +3,7 @@ package com.example.flowscheduler
 import androidx.annotation.VisibleForTesting
 import com.example.flowscheduler.models.AdminCommand
 import com.example.flowscheduler.models.Command
+import com.example.flowscheduler.models.Reason
 import com.example.flowscheduler.states.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +40,7 @@ class FlowScheduler {
         }.distinctUntilChanged { _, new ->
             return@distinctUntilChanged when(deviceState(new.command)) {
                 true -> {
-                    redundantCommand()
+                    commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
                     true
                 }
                 false -> false
@@ -50,7 +51,7 @@ class FlowScheduler {
 
             when (isDeviceAlreadyInCommandedState(incomingCommand)) {
                 true -> {
-                    redundantCommand()
+                    commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
                 }
                 false -> {
 
@@ -71,7 +72,7 @@ class FlowScheduler {
             scheduleCommand(incomingCommand.command)
             commandHistory[incomingCommand.commandID] = incomingCommand.command
         }
-        else -> if(command == incomingCommand.command) redundantCommand() else {
+        else -> if(command == incomingCommand.command) commandNotExecuted(Reason.REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL) else {
             scheduleCommand(incomingCommand.command)
             commandHistory[incomingCommand.commandID] = incomingCommand.command
         }
@@ -102,8 +103,8 @@ class FlowScheduler {
     }
 
     @VisibleForTesting
-    internal fun redundantCommand() {
-        print("Redundant command\n")
+    internal fun commandNotExecuted(reason: Reason) {
+        print("Redundant command $reason \n")
     }
 
     private suspend fun isDeviceAlreadyInCommandedState(incomingCommand: Command): Boolean {

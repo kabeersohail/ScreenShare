@@ -12,3 +12,13 @@ enum class AdminCommand {
 }
 
 data class Command(val commandID: Long, val command: AdminCommand)
+
+enum class Reason {
+    DEVICE_ALREADY_IN_COMMANDED_STATE,
+    REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL,
+
+    /**
+     * Will be added in later build
+     */
+    COMMAND_EXPIRED
+}

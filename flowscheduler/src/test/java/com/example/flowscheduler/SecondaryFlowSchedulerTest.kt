@@ -2,6 +2,7 @@ package com.example.flowscheduler
 
 import com.example.flowscheduler.models.AdminCommand
 import com.example.flowscheduler.models.Command
+import com.example.flowscheduler.models.Reason
 import com.example.flowscheduler.states.AdminLockState
 import com.example.flowscheduler.states.DeviceState
 import com.example.flowscheduler.states.KioskLockState
@@ -56,7 +57,7 @@ class SecondaryFlowSchedulerTest {
             job.cancel()
 
             // Then
-            verify(exactly = 1) { flowScheduler.redundantCommand() }
+            verify(exactly = 1) { flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE) }
 
         }
 
@@ -110,7 +111,7 @@ class SecondaryFlowSchedulerTest {
             job.cancel()
 
             // Then
-            verify(exactly = 4) { flowScheduler.redundantCommand() }
+            verify(exactly = 4) { flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE) }
 
         }
 
@@ -185,7 +186,7 @@ class SecondaryFlowSchedulerTest {
             job.cancel()
 
             // Then
-            coVerify(exactly = 0) { flowScheduler.redundantCommand() }
+            coVerify(exactly = 0) { flowScheduler.commandNotExecuted(any()) }
 
         }
 
@@ -213,12 +214,12 @@ class SecondaryFlowSchedulerTest {
 
             // Then
             coVerify(exactly = 1) { flowScheduler.scheduleCommand(any()) }
-            coVerify(exactly = 2) { flowScheduler.redundantCommand() }
+            coVerify(exactly = 2) { flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE) }
 
             coVerifyOrder {
                 flowScheduler.scheduleCommand(any())
-                flowScheduler.redundantCommand()
-                flowScheduler.redundantCommand()
+                flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
+                flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
             }
         }
 
@@ -245,12 +246,12 @@ class SecondaryFlowSchedulerTest {
 
             // Then
             coVerify(exactly = 1) { flowScheduler.scheduleCommand(any()) }
-            coVerify(exactly = 2) { flowScheduler.redundantCommand() }
+            coVerify(exactly = 2) { flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE) }
 
             coVerifyOrder {
                 flowScheduler.scheduleCommand(any())
-                flowScheduler.redundantCommand()
-                flowScheduler.redundantCommand()
+                flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
+                flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
             }
         }
 
@@ -281,7 +282,7 @@ class SecondaryFlowSchedulerTest {
 
             // Then
             coVerify(exactly = 6) { flowScheduler.scheduleCommand(any()) }
-            coVerify(exactly = 0) { flowScheduler.redundantCommand() }
+            coVerify(exactly = 0) { flowScheduler.commandNotExecuted(any()) }
 
             coVerifyOrder {
                 flowScheduler.scheduleCommand(any())
@@ -319,7 +320,7 @@ class SecondaryFlowSchedulerTest {
             job.cancel()
 
             // Then
-            coVerify(exactly = 0) { flowScheduler.redundantCommand() }
+            coVerify(exactly = 0) { flowScheduler.commandNotExecuted(any()) }
         }
 
     @Test
@@ -382,11 +383,11 @@ class SecondaryFlowSchedulerTest {
         job.cancel()
 
         coVerify(exactly = 2) { flowScheduler.scheduleCommand(any()) }
-        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+        coVerify(exactly = 1) { flowScheduler.commandNotExecuted(Reason.REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL) }
 
         coVerifyOrder {
             flowScheduler.scheduleCommand(any())
-            flowScheduler.redundantCommand()
+            flowScheduler.commandNotExecuted(Reason.REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL)
             flowScheduler.scheduleCommand(any())
         }
     }
@@ -411,11 +412,11 @@ class SecondaryFlowSchedulerTest {
         job.cancel()
 
         coVerify(exactly = 1) { flowScheduler.scheduleCommand(any()) }
-        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+        coVerify(exactly = 1) { flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE) }
 
         coVerifyOrder {
             flowScheduler.scheduleCommand(any())
-            flowScheduler.redundantCommand()
+            flowScheduler.commandNotExecuted(Reason.DEVICE_ALREADY_IN_COMMANDED_STATE)
         }
     }
 
@@ -451,11 +452,11 @@ class SecondaryFlowSchedulerTest {
         job.cancel()
 
 
-        coVerify(exactly = 1) { flowScheduler.redundantCommand() }
+        coVerify(exactly = 1) { flowScheduler.commandNotExecuted(Reason.REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL) }
 
         coVerifyOrder {
             flowScheduler.scheduleCommand(any())
-            flowScheduler.redundantCommand()
+            flowScheduler.commandNotExecuted(Reason.REDUNDANT_COMMAND_FROM_DIFFERENT_CHANNEL)
         }
     }
 
