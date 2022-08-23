@@ -10,7 +10,7 @@ class KtorConfiguration {
         install(Auth) {
             basic {
                 credentials {
-                    BasicAuthCredentials("AC9068f0f7e93b796fa721efe9497e9add","10ace9e068e2a764956b4f5e6b0c56ae")
+                    BasicAuthCredentials("AC9068f0f7e93b796fa721efe9497e9add","cebd4436488a9fc2d44342a0ed0df74d")
                 }
             }
         }

@@ -38,6 +38,7 @@ import com.twilio.video.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -185,7 +186,45 @@ class LaunchFragment : Fragment() {
             }
         }
 
-        binding.composeToMp4.setOnClickListener {}
+        binding.composeToMp4.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val x: HttpResponse = KtorConfiguration().client.post("https://video.twilio.com/v1/Compositions") {
+
+                        val trackSid = localParticipant.localVideoTracks.first().trackSid
+                        Log.d("SOHAIL", trackSid)
+
+                        setBody(
+                            FormDataContent(Parameters.build {
+                                append("VideoLayout", "\"transcode\": {\n" +
+                                        "        \"video_sources\": \"$trackSid\"\n" +
+                                        "    }")
+                                append("VideoLayout", "[{\"type\": \"exclude\", \"all\": true}]")
+                                append("StatusCallback", "https://www.example.com/callbacks")
+                                append("Format", "mp4")
+                                append("RoomSid", room.sid)
+                            })
+                        )
+                    }
+
+                    when(x.status) {
+                        else -> Log.d("SOHAIL","${x.status}")
+                    }
+
+                } catch (e: RedirectResponseException) {
+                    // 3.x.x - responses
+                    Log.d("SOHAIL", e.response.status.description)
+                } catch (e: ClientRequestException) {
+                    // 4.x.x - responses
+                    Log.d("SOHAIL", e.response.status.description)
+                } catch (e: ServerResponseException) {
+                    // 5.x.x - responses
+                    Log.d("SOHAIL", e.response.status.description)
+                } catch (e: Exception) {
+                    Log.d("SOHAIL", "${e.message}")
+                }
+            }
+        }
 
     }
 
