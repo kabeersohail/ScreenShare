@@ -191,18 +191,15 @@ class LaunchFragment : Fragment() {
                 try {
                     val x: HttpResponse = KtorConfiguration().client.post("https://video.twilio.com/v1/Compositions") {
 
-                        val trackSid = localParticipant.localVideoTracks.first().trackSid
+                        val trackSid = "RT8c5cec9c97f58a7ac096a14efbcba647"
                         Log.d("SOHAIL", trackSid)
 
                         setBody(
                             FormDataContent(Parameters.build {
-                                append("VideoLayout", "\"transcode\": {\n" +
-                                        "        \"video_sources\": \"$trackSid\"\n" +
-                                        "    }")
-                                append("VideoLayout", "[{\"type\": \"exclude\", \"all\": true}]")
+                                append("VideoLayout", "transcode:{video_sources:$trackSid}")
                                 append("StatusCallback", "https://www.example.com/callbacks")
                                 append("Format", "mp4")
-                                append("RoomSid", room.sid)
+                                append("RoomSid", "RMa44170c2bf9f363c4ac1f4cff95d5974")
                             })
                         )
                     }
