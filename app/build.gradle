@@ -34,12 +34,17 @@ android {
         dataBinding true
     }
 
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
 }
 
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation project(path: ':accesstoken')
@@ -48,10 +53,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Navigation component dependency
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.0"
-
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
+    
     implementation 'com.twilio:video-android:7.1.1'
     implementation 'com.twilio:audioswitch:1.1.5'
     implementation project(':accesstoken')
+
+    implementation "io.ktor:ktor-client-core:2.1.0"
+    implementation "io.ktor:ktor-client-android:2.1.0"
+    implementation "io.ktor:ktor-client-auth:2.1.0"
+
 }

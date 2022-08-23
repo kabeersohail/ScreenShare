@@ -34,6 +34,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/stop_screen_share" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/start_recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_recording"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_remote_screen" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/stop_recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop_recording"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_recording" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/compose_to_mp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/compose_to_mp4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stop_recording" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
