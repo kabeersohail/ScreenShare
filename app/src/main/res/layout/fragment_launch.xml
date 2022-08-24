@@ -6,62 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/share_screen"
-            android:text="@string/share_your_screen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:text="@string/stop_screen_sharing"
-            android:id="@+id/stop_screen_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/share_screen" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/view_remote_screen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/view_remote_screen"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/stop_screen_share" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/start_recording"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start_recording"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_remote_screen" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/stop_recording"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stop_recording"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/start_recording" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/compose_to_mp4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/compose_to_mp4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/stop_recording" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
