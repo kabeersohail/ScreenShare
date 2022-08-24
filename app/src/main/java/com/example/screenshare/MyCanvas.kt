@@ -29,8 +29,6 @@ class MyCanvas(context: Context): View(context) {
 
     private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
 
-    private lateinit var frame: Rect
-
     // Set up the paint with which to draw.
     private val paint = Paint().apply {
         color = drawColor
@@ -50,20 +48,11 @@ class MyCanvas(context: Context): View(context) {
         extraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
         extraCanvas.drawColor(backgroundColor)
-
-        // Calculate a rectangular frame around the picture.
-        val inset = 40
-        frame = Rect(inset, inset, width - inset, height - inset)
-
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
-
-        // Draw a frame around the canvas.
-        canvas.drawRect(frame, paint)
-
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
