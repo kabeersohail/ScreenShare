@@ -36,6 +36,14 @@ class AnnotationService : Service() {
             PixelFormat.TRANSLUCENT
         )
 
+        val bottomRightParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            layoutFlag,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
+
         params.gravity = Gravity.CENTER        //Initially view will be added to top-left corner
         params.x = 0
         params.y = 50
@@ -56,13 +64,30 @@ class AnnotationService : Service() {
                     if(view.parent != null){
                         windowManager.removeView(view)
                     }
+
                     windowManager.addView(canvas, params)
-                    windowManager.addView(view, params)
+                    bottomRightParams.gravity = Gravity.BOTTOM or Gravity.END
+
+                    windowManager.addView(view, bottomRightParams)
                 }
                 false -> {
                     if(canvas.parent != null){
+                        canvas.clearCanvas()
                         windowManager.removeView(canvas)
                     }
+                }
+            }
+        }
+
+        val eraser = view.findViewById<ToggleButton>(R.id.toggle_eraser)
+
+        eraser.setOnCheckedChangeListener { _, isChecked ->
+            when(isChecked) {
+                true -> {
+                    canvas.eraser()
+                }
+                false -> {
+                    canvas.default()
                 }
             }
         }

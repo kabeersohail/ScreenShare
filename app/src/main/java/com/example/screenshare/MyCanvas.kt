@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
+private const val ERASER_WIDTH = 100f
 
 class MyCanvas(context: Context): View(context) {
 
@@ -92,6 +93,20 @@ class MyCanvas(context: Context): View(context) {
     private fun touchUp() {
         // Reset the path so it doesn't get drawn again.
         path.reset()
+    }
+
+    fun clearCanvas() {
+        extraCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    }
+
+    fun eraser() {
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        paint.strokeWidth = ERASER_WIDTH
+    }
+
+    fun default() {
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
+        paint.strokeWidth = STROKE_WIDTH
     }
 
 }
