@@ -31,6 +31,9 @@ class MainActivity : Activity() {
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             startActivityForResult(intent, 0)
+        } else {
+            val annotationServiceIntent = Intent(this, AnnotationService::class.java)
+            startService(annotationServiceIntent)
         }
     }
 
