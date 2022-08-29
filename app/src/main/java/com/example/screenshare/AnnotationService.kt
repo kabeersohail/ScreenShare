@@ -3,22 +3,13 @@ package com.example.screenshare
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import android.view.*
-import android.widget.Button
-import android.widget.Toast
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.WindowManager
 import android.widget.ToggleButton
-import androidx.annotation.RequiresApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
 
 class AnnotationService : Service() {
 
