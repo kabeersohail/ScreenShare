@@ -1,55 +1,47 @@
 package com.example.screenshare
 
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
+import android.graphics.BlurMaskFilter
+import android.graphics.EmbossMaskFilter
+import android.graphics.MaskFilter
+import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.example.screenshare.databinding.ActivityMainBinding
+
 
 class MainActivity : Activity() {
 
     lateinit var binding: ActivityMainBinding
 
+    private lateinit var mPaint: Paint
+    private lateinit var mEmboss: MaskFilter
+    private lateinit var mBlur: MaskFilter
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-//        val myCanvasView = MyCanvas(this)
-//        myCanvasView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-//        myCanvasView.contentDescription = getString(R.string.canvasContentDescription)
-//        setContentView(myCanvasView)
+        mPaint = Paint()
+        mPaint.isAntiAlias = true
+        mPaint.isDither = true
+        mPaint.color = -0x10000
+        mPaint.style = Paint.Style.STROKE
+        mPaint.strokeJoin = Paint.Join.ROUND
+        mPaint.strokeCap = Paint.Cap.ROUND
+        mPaint.strokeWidth = 12f
+        mEmboss = EmbossMaskFilter(floatArrayOf(1f, 1f, 1f),
+            0.4f, 6f, 3.5f)
+        mBlur = BlurMaskFilter(8f, BlurMaskFilter.Blur.NORMAL)
 
-
-
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            startActivityForResult(intent, 0)
-        } else {
-            val annotationServiceIntent = Intent(this, AnnotationService::class.java)
-            startService(annotationServiceIntent)
-        }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when(requestCode == 0) {
-            true -> {
-                val annotationServiceIntent = Intent(this, AnnotationService::class.java)
-                startService(annotationServiceIntent)
-            }
-            false -> {
-                Log.d("SOHAIL","nope")
-            }
-        }
-
+    fun colorChanged(color: Int) {
+        mPaint.color = color
     }
 
 }
