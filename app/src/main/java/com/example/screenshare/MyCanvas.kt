@@ -6,6 +6,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
@@ -18,7 +21,7 @@ class MyCanvas(context: Context): View(context) {
 
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorBackground, null)
 
-    private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
+    private var drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
 
     private var path = Path()
 
@@ -109,4 +112,23 @@ class MyCanvas(context: Context): View(context) {
         paint.strokeWidth = STROKE_WIDTH
     }
 
+    suspend fun changeToThisColor() {
+        withContext(Dispatchers.Main) {
+            paint.color = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
+            wait()
+            paint.color = ResourcesCompat.getColor(resources, R.color.purple_200, null)
+            wait()
+            paint.color = ResourcesCompat.getColor(resources, R.color.teal_700, null)
+            wait()
+            paint.color = ResourcesCompat.getColor(resources, R.color.purple_700, null)
+            wait()
+            changeToThisColor()
+        }
+    }
+
+    private suspend fun wait() {
+        withContext(Dispatchers.IO) {
+            delay(3000L)
+        }
+    }
 }

@@ -10,8 +10,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.ToggleButton
+import kotlinx.coroutines.*
 
 class AnnotationService : Service() {
+
+    lateinit var canvas: MyCanvas
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -53,15 +56,15 @@ class AnnotationService : Service() {
 
         windowManager.addView(view, params)
 
-        val canvas = MyCanvas(this)
+        canvas = MyCanvas(this)
 
         val button = view.findViewById<ToggleButton>(R.id.toggle_paint)
 
         button.setOnCheckedChangeListener { _, isChecked ->
-            when(isChecked) {
+            when (isChecked) {
                 true -> {
                     // remove parent if already exist
-                    if(view.parent != null){
+                    if (view.parent != null) {
                         windowManager.removeView(view)
                     }
 
@@ -71,7 +74,7 @@ class AnnotationService : Service() {
                     windowManager.addView(view, bottomRightParams)
                 }
                 false -> {
-                    if(canvas.parent != null){
+                    if (canvas.parent != null) {
                         canvas.clearCanvas()
                         windowManager.removeView(canvas)
                     }
@@ -82,16 +85,14 @@ class AnnotationService : Service() {
         val eraser = view.findViewById<ToggleButton>(R.id.toggle_eraser)
 
         eraser.setOnCheckedChangeListener { _, isChecked ->
-            when(isChecked) {
-                true -> {
-                    canvas.eraser()
-                }
-                false -> {
-                    canvas.default()
-                }
+            when (isChecked) {
+                true -> canvas.eraser()
+                false -> canvas.default()
             }
         }
 
+        CoroutineScope(Dispatchers.Main).launch {
+            canvas.changeToThisColor()
+        }
     }
-
 }
