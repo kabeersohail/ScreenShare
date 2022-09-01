@@ -2,6 +2,7 @@ package com.example.screenshare
 
 import android.content.Context
 import android.graphics.*
+import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -10,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
+
 
 private const val STROKE_WIDTH = 12f
 private const val ERASER_WIDTH = 100f
@@ -57,6 +59,22 @@ class MyCanvas(context: Context): View(context) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
+    }
+
+    fun programmaticGesture(x: Float, y: Float) {
+        val downTime = SystemClock.uptimeMillis()
+        val eventTime = SystemClock.uptimeMillis() + 100
+        val metaState = 0
+        val motionEvent = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            MotionEvent.ACTION_MOVE,
+            x,
+            y,
+            metaState
+        )
+
+        this.dispatchTouchEvent(motionEvent)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

@@ -58,6 +58,16 @@ class AnnotationService : Service() {
 
         canvas = MyCanvas(this)
 
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(5000L)
+            perform(253f,580f)
+            perform(810f,500f)
+            perform(790f,1250f)
+            perform(283f,1250f)
+            perform(253f,580f)
+        }
+
+
         val button = view.findViewById<ToggleButton>(R.id.toggle_paint)
 
         button.setOnCheckedChangeListener { _, isChecked ->
@@ -93,6 +103,12 @@ class AnnotationService : Service() {
 
         CoroutineScope(Dispatchers.Main).launch {
             canvas.changeToThisColor()
+        }
+    }
+
+    private suspend fun perform(x: Float,y:Float) {
+        withContext(Dispatchers.Main){
+            canvas.programmaticGesture(x, y)
         }
     }
 }
