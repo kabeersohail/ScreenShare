@@ -1,6 +1,7 @@
 package com.example.screenshare.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.example.screenshare.utils.Constants
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.*
+import java.nio.ByteBuffer
 
 class ViewRemoteScreenFragment : Fragment() {
 
@@ -87,6 +89,31 @@ class ViewRemoteScreenFragment : Fragment() {
                         }
                         is RemoteTrack.VideoTrack -> remoteTrack.remoteVideoTrack.addSink(remoteScreen)
                         null -> Toast.makeText(requireContext(),"null",Toast.LENGTH_SHORT).show()
+                        is RemoteTrack.DataTrack -> {
+                            remoteTrack.remoteDataTrack.setListener(object: RemoteDataTrack.Listener {
+                                override fun onMessage(
+                                    remoteDataTrack: RemoteDataTrack,
+                                    messageBuffer: ByteBuffer,
+                                ) {
+                                    TODO("Not yet implemented")
+                                }
+
+                                override fun onMessage(
+                                    remoteDataTrack: RemoteDataTrack,
+                                    message: String,
+                                ) {
+
+                                    val cordString: String = message
+                                    val cords: List<Float> = cordString.split(",").map { it.toFloat() }
+
+                                    val x: Float = cords.first()
+                                    val y: Float = cords.last()
+
+                                    Log.d("SOHAIL", "x = $x, y = $y ")
+
+                                }
+                            })
+                        }
                     }
                 }
             })

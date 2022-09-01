@@ -2,18 +2,18 @@ package com.example.screenshare.annotations
 
 import android.content.Context
 import android.graphics.*
-import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
 import com.example.screenshare.R
+import com.twilio.video.LocalDataTrack
+import com.twilio.video.LocalParticipant
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
-private const val ERASER_WIDTH = 100f
 
-class MyCanvas(context: Context) : View(context) {
+class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : View(context) {
 
     private lateinit var extraCanvas: Canvas
     private lateinit var extraBitmap: Bitmap
@@ -62,6 +62,8 @@ class MyCanvas(context: Context) : View(context) {
         motionTouchEventX = event.x
         motionTouchEventY = event.y
 
+        localDataTrack.send("${motionTouchEventX},${motionTouchEventY}")
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> touchStart()
             MotionEvent.ACTION_MOVE -> touchMove()
@@ -98,42 +100,6 @@ class MyCanvas(context: Context) : View(context) {
     private fun touchUp() {
         // Reset the path so it doesn't get drawn again.
         path.reset()
-    }
-
-    fun clearCanvas() {
-        extraCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-    }
-
-    fun eraser() {
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        paint.strokeWidth = ERASER_WIDTH
-    }
-
-    fun default() {
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
-        paint.strokeWidth = STROKE_WIDTH
-    }
-
-    fun colorChange(color: String) {
-        val whiteInt = Color.parseColor(color)
-        paint.color = whiteInt
-    }
-
-    fun programmaticGesture(x: Float, y: Float) {
-
-        val downTime = SystemClock.uptimeMillis()
-        val eventTime = SystemClock.uptimeMillis() + 100
-        val metaState = 0
-        val motionEvent = MotionEvent.obtain(
-            downTime,
-            eventTime,
-            MotionEvent.ACTION_MOVE,
-            x,
-            y,
-            metaState
-        )
-
-        this.dispatchTouchEvent(motionEvent)
     }
 
 }

@@ -18,7 +18,6 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.example.accesstoken.AccessTokenGenerator
@@ -130,7 +129,6 @@ class LaunchFragment : Fragment() {
         }
 
         binding.canvas.setOnClickListener {
-
             if (!Settings.canDrawOverlays(requireContext())) {
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${requireContext().packageName}"))
                 startActivityForResult(intent, 0)
@@ -259,7 +257,7 @@ class LaunchFragment : Fragment() {
         screenVideoTrack.release()
     }
 
-    fun adjustScreenMetrics(metrics: DisplayMetrics): Float {
+    private fun adjustScreenMetrics(metrics: DisplayMetrics): Float {
         val srcWidth = metrics.widthPixels
         // Adjust translated screencast size for phones with high screen resolutions
         if (metrics.widthPixels > MAX_SHARED_SCREEN_WIDTH || metrics.heightPixels > MAX_SHARED_SCREEN_HEIGHT) {
@@ -291,7 +289,12 @@ class LaunchFragment : Fragment() {
     }
 
     private fun setupCanvas() {
-        canvas = MyCanvas(requireContext())
+
+        val localDataTrack = LocalDataTrack.create(requireContext()) ?: throw Exception("Data Track Empty")
+
+        localParticipant.publishTrack(localDataTrack)
+
+        canvas = MyCanvas(requireContext(), localDataTrack)
         windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         val layoutFlag: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
