@@ -10,6 +10,4 @@ sealed class RoomConnectionResult {
 sealed class RoomEvent {
     object Connected: RoomEvent()
     object RemoteUserJoined: RoomEvent()
-    object RecordingStarted: RoomEvent()
-    object RecordingStopped: RoomEvent()
 }

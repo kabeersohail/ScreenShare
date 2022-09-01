@@ -27,13 +27,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:enabled="true"
-            android:name=".services.ScreenCapturerService"
-            android:foregroundServiceType="mediaProjection"
-            tools:targetApi="q">
-        </service>
-
     </application>
 
 </manifest>

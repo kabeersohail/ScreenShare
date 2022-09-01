@@ -10,4 +10,10 @@
     <string name="stop_recording">Stop Recording</string>
     <string name="compose_to_mp4">Compose to mp4</string>
     <string name="canvas">Canvas</string>
+    <string name="view_one">View One</string>
+    <string name="view_two">View Two</string>
+    <string name="stop">stop</string>
+    <string name="clear">clear</string>
+    <string name="eraser">eraser</string>
+    <string name="pen">Pen</string>
 </resources>

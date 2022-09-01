@@ -2,16 +2,18 @@ package com.example.screenshare.annotations
 
 import android.content.Context
 import android.graphics.*
+import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
 import com.example.screenshare.R
 import com.twilio.video.LocalDataTrack
-import com.twilio.video.LocalParticipant
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
+private const val ERASER_WIDTH = 100f
+
 
 class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : View(context) {
 
@@ -24,8 +26,8 @@ class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : V
 
     var path = Path()
 
-    private var motionTouchEventX = 0f
-    private var motionTouchEventY = 0f
+    var motionTouchEventX = 0f
+    var motionTouchEventY = 0f
 
     private var currentX = 0f
     private var currentY = 0f
@@ -62,7 +64,7 @@ class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : V
         motionTouchEventX = event.x
         motionTouchEventY = event.y
 
-        localDataTrack.send("${motionTouchEventX},${motionTouchEventY}")
+        localDataTrack.send("${motionTouchEventX},${motionTouchEventY},${event.action}")
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> touchStart()
@@ -72,14 +74,14 @@ class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : V
         return true
     }
 
-    private fun touchStart() {
+    fun touchStart() {
         path.reset()
         path.moveTo(motionTouchEventX, motionTouchEventY)
         currentX = motionTouchEventX
         currentY = motionTouchEventY
     }
 
-    private fun touchMove() {
+    fun touchMove() {
         val dx = abs(motionTouchEventX - currentX)
         val dy = abs(motionTouchEventY - currentY)
         if (dx >= touchTolerance || dy >= touchTolerance) {
@@ -97,9 +99,41 @@ class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : V
         invalidate()
     }
 
-    private fun touchUp() {
+    fun touchUp() {
         // Reset the path so it doesn't get drawn again.
         path.reset()
     }
+
+    fun programmaticGesture(x: Float, y: Float) {
+
+        val downTime = SystemClock.uptimeMillis()
+        val eventTime = SystemClock.uptimeMillis() + 100
+        val metaState = 0
+        val motionEvent = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            MotionEvent.ACTION_MOVE,
+            x,
+            y,
+            metaState
+        )
+
+        this.dispatchTouchEvent(motionEvent)
+    }
+
+    fun eraser() {
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        paint.strokeWidth = ERASER_WIDTH
+    }
+
+    fun default() {
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
+        paint.strokeWidth = STROKE_WIDTH
+    }
+
+    fun clearCanvas() {
+        extraCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    }
+
 
 }

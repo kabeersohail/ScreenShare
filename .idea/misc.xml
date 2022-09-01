@@ -6,8 +6,12 @@
         <entry key="app/src/main/res/drawable/ic_screen_share_white_24dp.xml" value="0.1785" />
         <entry key="app/src/main/res/drawable/roundedbutton.xml" value="0.1785" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21614583333333334" />
+        <entry key="app/src/main/res/layout/button_layout.xml" value="0.2688564476885645" />
+        <entry key="app/src/main/res/layout/demo_view.xml" value="0.14175724637681159" />
         <entry key="app/src/main/res/layout/fragment_launch.xml" value="0.45121951219512196" />
+        <entry key="app/src/main/res/layout/fragment_view_one.xml" value="0.23125" />
         <entry key="app/src/main/res/layout/fragment_view_remote_screen.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_view_two.xml" value="0.14175724637681159" />
       </map>
     </option>
   </component>

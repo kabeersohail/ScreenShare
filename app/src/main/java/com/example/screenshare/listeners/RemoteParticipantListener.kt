@@ -27,7 +27,6 @@ class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?
         remoteAudioTrack: RemoteAudioTrack
     ) {
         Log.d(TAG,"Audio track subscribed")
-        callback.invoke(RemoteTrack.AudioTrack(remoteAudioTrack),"subscribed to remote participant's audio track")
     }
 
     override fun onAudioTrackSubscriptionFailed(
@@ -65,9 +64,6 @@ class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
-        remoteVideoTrack.priority = TrackPriority.HIGH
-        remoteVideoTrack.setContentPreferences(VideoContentPreferences(HD_1080P_VIDEO_DIMENSIONS))
-        callback.invoke(RemoteTrack.VideoTrack(remoteVideoTrack),"subscribed to remote participant's video track")
     }
 
     override fun onVideoTrackSubscriptionFailed(
@@ -83,7 +79,6 @@ class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?
         remoteVideoTrackPublication: RemoteVideoTrackPublication,
         remoteVideoTrack: RemoteVideoTrack
     ) {
-        callback.invoke(RemoteTrack.VideoTrack(remoteVideoTrack),"unsubscribed from video track of remote participant")
     }
 
     override fun onDataTrackPublished(

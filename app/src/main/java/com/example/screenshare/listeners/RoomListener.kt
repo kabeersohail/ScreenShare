@@ -42,11 +42,9 @@ class RoomListener(private val callback: (RoomConnectionResult)->Unit): Room.Lis
 
     override fun onRecordingStarted(room: Room) {
         Log.d(TAG,"recording started")
-        callback.invoke(RoomConnectionResult.Success(RoomEvent.RecordingStarted))
     }
 
     override fun onRecordingStopped(room: Room) {
         Log.d(TAG,"recording stopped")
-        callback.invoke(RoomConnectionResult.Success(RoomEvent.RecordingStopped))
     }
 }
