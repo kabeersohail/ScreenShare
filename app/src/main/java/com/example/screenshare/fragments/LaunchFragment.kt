@@ -4,25 +4,24 @@ import android.Manifest
 import android.app.Activity
 import android.app.Service
 import android.content.Context
+import android.graphics.PixelFormat
 import android.graphics.Point
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.example.accesstoken.AccessTokenGenerator
 import com.example.accesstoken.utils.ProfileData
 import com.example.screenshare.R
+import com.example.screenshare.annotations.MyCanvas
 import com.example.screenshare.databinding.FragmentLaunchBinding
-import com.example.screenshare.ktor.KtorConfiguration
 import com.example.screenshare.listeners.LocalParticipantListener
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
@@ -35,14 +34,6 @@ import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
 import com.example.screenshare.utils.Constants.ROOM_NAME
 import com.example.screenshare.utils.TAG
 import com.twilio.video.*
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class LaunchFragment : Fragment() {
@@ -53,6 +44,8 @@ class LaunchFragment : Fragment() {
     private lateinit var localParticipant: LocalParticipant
     private lateinit var screenVideoTrack: LocalVideoTrack
     private lateinit var localAudioTrack: LocalAudioTrack
+    private lateinit var canvas: MyCanvas
+    lateinit var windowManager: WindowManager
 
     private val screenCapturerListener: ScreenCapturer.Listener = object : ScreenCapturer.Listener{
         override fun onScreenCaptureError(errorDescription: String) {
@@ -131,98 +124,24 @@ class LaunchFragment : Fragment() {
             it.findNavController().navigate(R.id.action_launchFragment_to_viewRemoteScreenFragment)
         }
 
-        binding.startRecording.setOnClickListener {
+        binding.canvas.setOnClickListener {
+            canvas = MyCanvas(requireContext())
+            windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-            Log.d("SOHAIL",room.sid)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    KtorConfiguration().client.post("https://video.twilio.com/v1/Rooms/${room.sid}/RecordingRules") {
-
-                        setBody(
-                            FormDataContent(Parameters.build {
-                                append("Rules", "[{\"type\": \"include\", \"all\": true}]")
-                            })
-                        )
-                    }
-                } catch (e: RedirectResponseException) {
-                    // 3.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ClientRequestException) {
-                    // 4.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ServerResponseException) {
-                    // 5.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: Exception) {
-                    Log.d("SOHAIL", "${e.message}")
-                }
+            val layoutFlag: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                WindowManager.LayoutParams.TYPE_PHONE
             }
+
+            val params = WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, layoutFlag, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT)
+
+            params.gravity = Gravity.CENTER        //Initially view will be added to top-left corner
+            params.x = 0
+            params.y = 50
+
+            windowManager.addView(view, params)
         }
-
-        binding.stopRecording.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    KtorConfiguration().client.post("https://video.twilio.com/v1/Rooms/${room.sid}/RecordingRules") {
-
-                        setBody(
-                            FormDataContent(Parameters.build {
-                                append("Rules", "[{\"type\": \"exclude\", \"all\": true}]")
-                            })
-                        )
-                    }
-                } catch (e: RedirectResponseException) {
-                    // 3.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ClientRequestException) {
-                    // 4.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ServerResponseException) {
-                    // 5.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: Exception) {
-                    Log.d("SOHAIL", "${e.message}")
-                }
-            }
-        }
-
-        binding.composeToMp4.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val x: HttpResponse = KtorConfiguration().client.post("https://video.twilio.com/v1/Compositions") {
-
-                        val trackSid = localParticipant.localVideoTracks.first().trackSid
-                        Log.d("SOHAIL", trackSid)
-
-                        setBody(
-                            FormDataContent(Parameters.build {
-                                append("VideoLayout", "transcode:{video_sources:$trackSid}")
-                                append("StatusCallback", "https://www.example.com/callbacks")
-                                append("Format", "mp4")
-                                append("RoomSid", room.sid)
-                            })
-                        )
-                    }
-
-                    when(x.status) {
-                        else -> Log.d("SOHAIL","${x.status}")
-                    }
-
-                } catch (e: RedirectResponseException) {
-                    // 3.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ClientRequestException) {
-                    // 4.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: ServerResponseException) {
-                    // 5.x.x - responses
-                    Log.d("SOHAIL", e.response.status.description)
-                } catch (e: Exception) {
-                    Log.d("SOHAIL", "${e.message}")
-                }
-            }
-        }
-
     }
 
     private fun connectToRoom() {

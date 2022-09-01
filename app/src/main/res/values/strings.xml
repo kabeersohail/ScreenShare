@@ -9,4 +9,5 @@
     <string name="start_recording">Start Recording</string>
     <string name="stop_recording">Stop Recording</string>
     <string name="compose_to_mp4">Compose to mp4</string>
+    <string name="canvas">Canvas</string>
 </resources>
