@@ -4,16 +4,20 @@ import android.Manifest
 import android.app.Activity
 import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -94,6 +98,7 @@ class LaunchFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -125,22 +130,13 @@ class LaunchFragment : Fragment() {
         }
 
         binding.canvas.setOnClickListener {
-            canvas = MyCanvas(requireContext())
-            windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-            val layoutFlag: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            if (!Settings.canDrawOverlays(requireContext())) {
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${requireContext().packageName}"))
+                startActivityForResult(intent, 0)
             } else {
-                WindowManager.LayoutParams.TYPE_PHONE
+                setupCanvas()
             }
-
-            val params = WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, layoutFlag, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT)
-
-            params.gravity = Gravity.CENTER        //Initially view will be added to top-left corner
-            params.x = 0
-            params.y = 50
-
-            windowManager.addView(view, params)
         }
     }
 
@@ -292,6 +288,39 @@ class LaunchFragment : Fragment() {
         display.getRealSize(screenSize)
         metrics.widthPixels = screenSize.x
         metrics.heightPixels = screenSize.y
+    }
+
+    private fun setupCanvas() {
+        canvas = MyCanvas(requireContext())
+        windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val layoutFlag: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
+        val params = WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, layoutFlag, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT)
+
+        params.gravity = Gravity.CENTER        //Initially view will be added to top-left corner
+        params.x = 0
+        params.y = 50
+
+        windowManager.addView(canvas, params)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when(requestCode == 0) {
+            true -> {
+               setupCanvas()
+            }
+            false -> {
+                Log.d("SOHAIL","nope")
+            }
+        }
+
     }
 
 }
