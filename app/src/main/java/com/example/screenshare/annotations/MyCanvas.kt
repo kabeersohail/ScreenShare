@@ -64,7 +64,10 @@ class MyCanvas(context: Context, private val localDataTrack: LocalDataTrack) : V
         motionTouchEventX = event.x
         motionTouchEventY = event.y
 
-        localDataTrack.send("${motionTouchEventX},${motionTouchEventY},${event.action}")
+        val density: Float = context.resources.displayMetrics.density
+
+
+        localDataTrack.send("${motionTouchEventX/density},${motionTouchEventY/density},${event.action}")
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> touchStart()

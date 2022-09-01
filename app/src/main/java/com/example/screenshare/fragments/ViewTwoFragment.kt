@@ -115,8 +115,10 @@ class ViewTwoFragment : Fragment() {
                                     val x: Float = cords[0]
                                     val y: Float = cords[1]
 
-                                    canvas.motionTouchEventX = x
-                                    canvas.motionTouchEventY = y
+                                    val density: Float = requireContext().resources.displayMetrics.density
+
+                                    canvas.motionTouchEventX = x * density
+                                    canvas.motionTouchEventY = y * density
 
                                     when(cords[2].toInt()) {
                                         MotionEvent.ACTION_DOWN -> canvas.touchStart()
@@ -189,7 +191,7 @@ class ViewTwoFragment : Fragment() {
                 windowManager.removeView(view)
             }
 
-            windowManager.addView(view, params)
+            windowManager.addView(view, bottomRightParams)
         }
 
         val clear: Button = view.findViewById(R.id.clearCanvas)

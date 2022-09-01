@@ -182,7 +182,7 @@ class ViewOneFragment : Fragment() {
                 windowManager.removeView(view)
             }
 
-            windowManager.addView(view, params)
+            windowManager.addView(view, bottomRightParams)
         }
 
         windowManager.addView(canvas, params)
