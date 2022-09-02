@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ScreenShare</string>
+    <string name="app_name">Annotations via Twilio DataTrack</string>
     <string name="view_remote_screen">View remote screen</string>
     <string name="share_your_screen">Share your screen</string>
     <string name="stop_screen_sharing">Stop screen sharing</string>

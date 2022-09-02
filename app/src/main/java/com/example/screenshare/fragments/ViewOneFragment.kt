@@ -35,10 +35,6 @@ class ViewOneFragment : Fragment() {
     private lateinit var canvas: MyCanvas
     lateinit var windowManager: WindowManager
 
-    companion object {
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -135,6 +131,7 @@ class ViewOneFragment : Fragment() {
         }
 
         val params = WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, layoutFlag, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT)
+        val canvasParams = WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, layoutFlag, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT)
 
         params.gravity = Gravity.CENTER        //Initially view will be added to top-left corner
         params.x = 0
@@ -176,7 +173,7 @@ class ViewOneFragment : Fragment() {
                 windowManager.removeView(canvas)
             }
 
-            windowManager.addView(canvas, params)
+            windowManager.addView(canvas, canvasParams)
 
             if (view.parent != null) {
                 windowManager.removeView(view)
@@ -185,14 +182,10 @@ class ViewOneFragment : Fragment() {
             windowManager.addView(view, bottomRightParams)
         }
 
-        windowManager.addView(canvas, params)
+        windowManager.addView(canvas, canvasParams)
         bottomRightParams.gravity = Gravity.BOTTOM or Gravity.END
 
         windowManager.addView(view, bottomRightParams)
-    }
-
-    private fun addView(params: WindowManager.LayoutParams) {
-        windowManager.addView(canvas, params)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
