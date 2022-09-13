@@ -7,5 +7,5 @@ import com.twilio.video.RemoteVideoTrack
 sealed class RemoteTrack {
     class VideoTrack(val remoteVideoTrack: RemoteVideoTrack) : RemoteTrack()
     class AudioTrack(val remoteAudioTrack: RemoteAudioTrack): RemoteTrack()
-    class DataTrack(val remoteDataTrack: RemoteDataTrack): RemoteTrack()
+    class DataTrack(val remoteDataTrack: RemoteDataTrack?): RemoteTrack()
 }

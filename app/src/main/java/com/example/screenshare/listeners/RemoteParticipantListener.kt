@@ -90,6 +90,7 @@ class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?
         remoteParticipant: RemoteParticipant,
         remoteDataTrackPublication: RemoteDataTrackPublication
     ) {
+        callback.invoke(RemoteTrack.DataTrack(remoteDataTrackPublication.remoteDataTrack),"Remote data track published")
     }
 
     override fun onDataTrackUnpublished(

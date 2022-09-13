@@ -93,12 +93,21 @@ class ViewRemoteScreenFragment : Fragment() {
 
                         }
                         is RemoteTrack.VideoTrack -> {
+
+                            remoteScreen.setOnTouchListener { v, event ->
+
+                                localDataTrack.send("$event")
+
+                                return@setOnTouchListener false
+
+                            }
+
                             remoteTrack.remoteVideoTrack.addSink(remoteScreen)
                         }
 
                         null -> Toast.makeText(requireContext(),"null",Toast.LENGTH_SHORT).show()
                         is RemoteTrack.DataTrack -> {
-                            remoteTrack.remoteDataTrack.setListener(object: RemoteDataTrack.Listener {
+                            remoteTrack.remoteDataTrack?.setListener(object: RemoteDataTrack.Listener {
                                 override fun onMessage(
                                     remoteDataTrack: RemoteDataTrack,
                                     messageBuffer: ByteBuffer,

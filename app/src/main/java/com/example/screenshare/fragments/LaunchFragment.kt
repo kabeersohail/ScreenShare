@@ -25,15 +25,14 @@ import com.example.screenshare.listeners.LocalParticipantListener
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.managers.ScreenCaptureManager
-import com.example.screenshare.results.RoomConnectionResult
-import com.example.screenshare.results.RoomEvent
+import com.example.screenshare.results.*
 import com.example.screenshare.results.Track
-import com.example.screenshare.results.VideoTrackPublishResult
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_HEIGHT
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
 import com.example.screenshare.utils.Constants.ROOM_NAME
 import com.example.screenshare.utils.TAG
 import com.twilio.video.*
+import java.nio.ByteBuffer
 
 class LaunchFragment : Fragment() {
 
@@ -165,7 +164,32 @@ class LaunchFragment : Fragment() {
                             RoomEvent.RemoteUserJoined -> {
                                 val remoteParticipants: List<RemoteParticipant> = room.remoteParticipants
                                 remoteParticipants.forEach { remoteParticipant ->
-                                    remoteParticipant.setListener(RemoteParticipantListener { _, _ ->
+                                    remoteParticipant.setListener(RemoteParticipantListener { remoteTrack, message ->
+
+                                        when(remoteTrack) {
+                                            is RemoteTrack.AudioTrack -> {}
+                                            is RemoteTrack.DataTrack -> {
+
+                                                Toast.makeText(requireContext(),"Data track published", Toast.LENGTH_SHORT).show()
+
+                                                remoteTrack.remoteDataTrack?.setListener(object: RemoteDataTrack.Listener {
+                                                    override fun onMessage(
+                                                        remoteDataTrack: RemoteDataTrack,
+                                                        messageBuffer: ByteBuffer,
+                                                    ) {}
+
+                                                    override fun onMessage(
+                                                        remoteDataTrack: RemoteDataTrack,
+                                                        message: String,
+                                                    ) {
+                                                        Log.d("DATA TRACK", message)
+                                                    }
+
+                                                })
+                                            }
+                                            is RemoteTrack.VideoTrack -> {}
+                                            null -> {}
+                                        }
 
                                     })
                                 }
