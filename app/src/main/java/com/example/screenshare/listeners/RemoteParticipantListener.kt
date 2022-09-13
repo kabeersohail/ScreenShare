@@ -103,6 +103,7 @@ class RemoteParticipantListener(private val callback: (remoteTrack: RemoteTrack?
         remoteDataTrackPublication: RemoteDataTrackPublication,
         remoteDataTrack: RemoteDataTrack
     ) {
+        callback.invoke(RemoteTrack.DataTrack(remoteDataTrack),"subscribed to remote data track")
     }
 
     override fun onDataTrackSubscriptionFailed(

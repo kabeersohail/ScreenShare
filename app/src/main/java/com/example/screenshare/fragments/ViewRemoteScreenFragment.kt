@@ -1,6 +1,7 @@
 package com.example.screenshare.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.accesstoken.AccessTokenGenerator
 import com.example.accesstoken.utils.ProfileData
+import com.example.screenshare.MainActivity
 import com.example.screenshare.databinding.FragmentViewRemoteScreenBinding
 import com.example.screenshare.listeners.RemoteParticipantListener
 import com.example.screenshare.listeners.RoomListener
@@ -18,6 +20,8 @@ import com.example.screenshare.utils.Constants
 import com.twilio.audioswitch.AudioDevice
 import com.twilio.audioswitch.AudioSwitch
 import com.twilio.video.*
+import java.nio.ByteBuffer
+
 
 class ViewRemoteScreenFragment : Fragment() {
 
@@ -26,10 +30,11 @@ class ViewRemoteScreenFragment : Fragment() {
     lateinit var remoteScreen: VideoView
     private lateinit var remoteParticipants: List<RemoteParticipant>
     private lateinit var audioSwitch: AudioSwitch
+    private lateinit var localDataTrack: LocalDataTrack
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentViewRemoteScreenBinding.inflate(inflater, container, false)
         return binding.root
@@ -37,6 +42,8 @@ class ViewRemoteScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        localDataTrack = (requireActivity() as MainActivity).localDataTrack
 
         remoteScreen = binding.remoteScreen
         audioSwitch = AudioSwitch(requireContext().applicationContext)
@@ -85,8 +92,27 @@ class ViewRemoteScreenFragment : Fragment() {
                             audioSwitch.activate()
 
                         }
-                        is RemoteTrack.VideoTrack -> remoteTrack.remoteVideoTrack.addSink(remoteScreen)
+                        is RemoteTrack.VideoTrack -> {
+                            remoteTrack.remoteVideoTrack.addSink(remoteScreen)
+                        }
+
                         null -> Toast.makeText(requireContext(),"null",Toast.LENGTH_SHORT).show()
+                        is RemoteTrack.DataTrack -> {
+                            remoteTrack.remoteDataTrack.setListener(object: RemoteDataTrack.Listener {
+                                override fun onMessage(
+                                    remoteDataTrack: RemoteDataTrack,
+                                    messageBuffer: ByteBuffer,
+                                ) {}
+
+                                override fun onMessage(
+                                    remoteDataTrack: RemoteDataTrack,
+                                    message: String,
+                                ) {
+                                    Log.d("DATA TRACK", message)
+                                }
+
+                            })
+                        }
                     }
                 }
             })

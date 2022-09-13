@@ -1,6 +1,7 @@
 package com.example.screenshare.listeners
 
 import android.util.Log
+import com.example.screenshare.results.Track
 import com.example.screenshare.utils.TAG
 import com.example.screenshare.results.VideoTrackPublishResult
 import com.twilio.video.*
@@ -25,7 +26,7 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localParticipant: LocalParticipant,
         localVideoTrackPublication: LocalVideoTrackPublication
     ) {
-        callback.invoke(VideoTrackPublishResult.Success)
+        callback.invoke(VideoTrackPublishResult.Success(Track.VideoTrack))
     }
 
     override fun onVideoTrackPublicationFailed(
@@ -40,7 +41,7 @@ class LocalParticipantListener(private val callback: (VideoTrackPublishResult)->
         localParticipant: LocalParticipant,
         localDataTrackPublication: LocalDataTrackPublication
     ) {
-        Log.d(TAG,"Data track published")
+        callback.invoke(VideoTrackPublishResult.Success(Track.DataTrack))
     }
 
     override fun onDataTrackPublicationFailed(

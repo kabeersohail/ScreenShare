@@ -1,6 +1,5 @@
 package com.example.screenshare.fragments
 
-import android.Manifest
 import android.app.Activity
 import android.app.Service
 import android.content.Context
@@ -10,17 +9,16 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.example.accesstoken.AccessTokenGenerator
 import com.example.accesstoken.utils.ProfileData
-import com.example.accesstoken.utils.UpdateRules
+import com.example.screenshare.MainActivity
 import com.example.screenshare.R
 import com.example.screenshare.databinding.FragmentLaunchBinding
 import com.example.screenshare.listeners.LocalParticipantListener
@@ -29,13 +27,13 @@ import com.example.screenshare.listeners.RoomListener
 import com.example.screenshare.managers.ScreenCaptureManager
 import com.example.screenshare.results.RoomConnectionResult
 import com.example.screenshare.results.RoomEvent
+import com.example.screenshare.results.Track
 import com.example.screenshare.results.VideoTrackPublishResult
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_HEIGHT
 import com.example.screenshare.utils.Constants.MAX_SHARED_SCREEN_WIDTH
 import com.example.screenshare.utils.Constants.ROOM_NAME
 import com.example.screenshare.utils.TAG
 import com.twilio.video.*
-
 
 class LaunchFragment : Fragment() {
 
@@ -44,7 +42,8 @@ class LaunchFragment : Fragment() {
     private lateinit var screenCaptureManager: ScreenCaptureManager
     private lateinit var localParticipant: LocalParticipant
     private lateinit var screenVideoTrack: LocalVideoTrack
-    private lateinit var localAudioTrack: LocalAudioTrack
+    private lateinit var localDataTrack: LocalDataTrack
+    private lateinit var contraintLayout: ConstraintLayout
 
     private val screenCapturerListener: ScreenCapturer.Listener = object : ScreenCapturer.Listener{
         override fun onScreenCaptureError(errorDescription: String) {
@@ -53,19 +52,6 @@ class LaunchFragment : Fragment() {
 
         override fun onFirstFrameAvailable() {
             Log.d(TAG, "First frame available")
-        }
-    }
-
-    private val requestRecordedAudioPermissionResult = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted  ->
-        if(isGranted){
-            // Add audio track here
-            localAudioTrack = LocalAudioTrack.create(requireContext(), true) ?: throw Exception("Audio track not created")
-            localParticipant.publishTrack(localAudioTrack)
-            Toast.makeText(requireContext(),"Audio track published", Toast.LENGTH_SHORT).show()
-
-            val x = UpdateRules().x(room.sid)
-            Toast.makeText(requireContext(), x, Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -99,6 +85,10 @@ class LaunchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         screenCaptureManager = ScreenCaptureManager(requireContext())
+
+        contraintLayout = binding.myTouchArea
+
+        localDataTrack = (requireActivity() as MainActivity).localDataTrack
 
         binding.shareScreen.setOnClickListener {
 
@@ -205,11 +195,24 @@ class LaunchFragment : Fragment() {
         localParticipant.setListener(LocalParticipantListener { videoTrackPublishResult ->
             when (videoTrackPublishResult) {
                 is VideoTrackPublishResult.Failure -> throw Exception(videoTrackPublishResult.twilioException.message)
-                VideoTrackPublishResult.Success -> {
-                    Toast.makeText(requireContext(), "Video track published successfully", Toast.LENGTH_SHORT).show()
+                is VideoTrackPublishResult.Success -> {
 
-                    // Request run time audio record permission
-                    requestRecordedAudioPermissionResult.launch(Manifest.permission.RECORD_AUDIO)
+                    when(videoTrackPublishResult.track) {
+                        Track.DataTrack -> {
+                            Toast.makeText(requireContext(), "Data track published successfully", Toast.LENGTH_SHORT).show()
+                            contraintLayout.setOnTouchListener { v, event ->
+
+                                localDataTrack.send("$event")
+
+                                v.performClick()
+
+                            }
+                        }
+                        Track.VideoTrack -> {
+                            Toast.makeText(requireContext(), "Video track published successfully", Toast.LENGTH_SHORT).show()
+                            localParticipant.publishTrack(localDataTrack)
+                        }
+                    }
                 }
             }
         })
@@ -220,13 +223,26 @@ class LaunchFragment : Fragment() {
 
     private fun startScreenCapture(screenCapturer: ScreenCapturer): LocalVideoTrack {
 
-        val metrics = DisplayMetrics()
-        getRealScreenSize(requireContext().applicationContext, metrics)
+        var width: Int = 0
+        var height:Int = 0
 
-        adjustScreenMetrics(metrics)
-
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
+        val windowManager = requireContext().applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display: Display = windowManager.defaultDisplay
+        val outPoint = Point()
+        if (Build.VERSION.SDK_INT >= 19) {
+            // include navigation bar
+            display.getRealSize(outPoint)
+        } else {
+            // exclude navigation bar
+            display.getSize(outPoint)
+        }
+        if (outPoint.y > outPoint.x) {
+            height = outPoint.y
+            width = outPoint.x
+        } else {
+            height = outPoint.x
+            width = outPoint.y
+        }
 
         return LocalVideoTrack.create(requireContext(), true, screenCapturer, VideoFormat(
             VideoDimensions(width, height),
@@ -246,7 +262,7 @@ class LaunchFragment : Fragment() {
         screenVideoTrack.release()
     }
 
-    fun adjustScreenMetrics(metrics: DisplayMetrics): Float {
+    private fun adjustScreenMetrics(metrics: DisplayMetrics): Float {
         val srcWidth = metrics.widthPixels
         // Adjust translated screencast size for phones with high screen resolutions
         if (metrics.widthPixels > MAX_SHARED_SCREEN_WIDTH || metrics.heightPixels > MAX_SHARED_SCREEN_HEIGHT) {
@@ -265,7 +281,7 @@ class LaunchFragment : Fragment() {
         return videoScale
     }
 
-    fun getRealScreenSize(context: Context, metrics: DisplayMetrics) {
+    private fun getRealScreenSize(context: Context, metrics: DisplayMetrics) {
         val wm = context.getSystemService(Service.WINDOW_SERVICE) as WindowManager
         val display = wm.defaultDisplay
 
@@ -275,6 +291,10 @@ class LaunchFragment : Fragment() {
         display.getRealSize(screenSize)
         metrics.widthPixels = screenSize.x
         metrics.heightPixels = screenSize.y
+    }
+
+    fun absoluteDisplay() {
+
     }
 
 }
